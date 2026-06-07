@@ -1,6 +1,6 @@
 # Soha Python Coach
 
-Mac app to teach Soha Python over **10 weeks** — aligned with the **Science Bowl summer schedule** (Jun 8 – Aug 14, 2026): Pass 1 (weeks 1–4), Pass 2 (weeks 5–8), Pass 3 (weeks 9–10), plus 5 games and Final Boss.
+Mac app to teach Soha Python over **10 summer calendar weeks** (Jun 8 – Aug 14) — aligned with Science Bowl Pass 1–3. Each calendar week bundles **5 Outschool sessions** (50 total): Level 1 → Level 2 → Level 3 → Level 4 → Portfolio, plus 5 games and Final Boss.
 
 **v1.1** — saved Playground code per lesson, auto-checks, pygame launcher, progress backup, printables, NSB quiz tie-in.
 
@@ -36,28 +36,28 @@ open ~/Library/Developer/Xcode/DerivedData/SohaPythonCoach-*/Build/Products/Debu
 
 | Tab | What it does |
 |-----|----------------|
-| **Journey** | 10-week map · Pass 1–3 · Outschool live lessons |
+| **Journey** | 10 calendar weeks · 50 Outschool sessions · Pass 1–3 · 5 games |
 | **Games** | 5 game projects with starter code + auto-checks |
 | **Final Boss** | Sound + 3 coins + timer checklist |
 | **Playground** | Write & run Python · auto-save · pygame window · Open in Terminal |
 | **Progress** | Dashboard · backup JSON · printables · stuck list |
 
-## 10-week path (matches Science Bowl)
+## 10 calendar weeks (50 Outschool sessions)
 
-| Week | Dates | Science Bowl pass | Python focus |
-|------|-------|-------------------|--------------|
-| 1 | Jun 8–12 | Pass 1 · Foundations | Hello Python · variables · Fizz Buzz |
-| 2 | Jun 15–19 | Pass 1 · Building depth | input · if/else · Pizza Shop planning |
-| 3 | Jun 22–26 | Pass 1 · Mid-level mastery | while · for loops |
-| 4 | Jun 29–Jul 3 | Pass 1 · Round-ready | functions · files |
-| 5 | Jul 6–10 | Pass 2 · Foundations | Guess the Number · Rock Paper Scissors |
-| 6 | Jul 13–17 | Pass 2 · Building depth | Lists · **Science Bowl Quiz game** |
-| 7 | Jul 20–24 | Pass 2 · Mid-level mastery | Coordinates · pygame intro |
-| 8 | Jul 27–31 | Pass 2 · Round-ready | **Coin Collector** Final Boss |
-| 9 | Aug 3–7 | Pass 3 · Final review 1 | Flask · Todo List web app |
-| 10 | Aug 10–14 | Pass 3 · Final review 2 | Graduation · portfolio showcase |
+Each row is one **Science Bowl week**. Open it to see **5 Outschool track weeks** inside (self-paced + live lessons).
 
-Each week includes self-paced lessons + one **60 min Outschool live lesson** (David Sofield Level 1 track).
+| Cal week | Dates | Pass | Bundled Outschool content |
+|----------|-------|------|---------------------------|
+| 1 | Jun 8–12 | Pass 1 | Level 1 · sessions 1–5 |
+| 2 | Jun 15–19 | Pass 1 | Level 1 · sessions 6–10 |
+| 3 | Jun 22–26 | Pass 1 | Level 2 · sessions 1–5 |
+| 4 | Jun 29–Jul 3 | Pass 1 | Level 2 · sessions 6–10 |
+| 5 | Jul 6–10 | Pass 2 | Level 3 · sessions 1–5 |
+| 6 | Jul 13–17 | Pass 2 | Level 3 · sessions 6–10 |
+| 7 | Jul 20–24 | Pass 2 | Level 4 · sessions 1–5 |
+| 8 | Jul 27–31 | Pass 2 | Level 4 · sessions 6–10 |
+| 9 | Aug 3–7 | Pass 3 | Portfolio · labs 1–5 |
+| 10 | Aug 10–14 | Pass 3 | Portfolio · labs 6–10 + graduation |
 
 ## Summer schedule
 
@@ -69,9 +69,9 @@ Calendar detail: `SohaAli/Schedule/summer-2026-calendar.md` · `science-bowl-pre
 
 Progress tab → **Open student workbook** or **Open teacher script** (HTML, print with ⌘P).
 
-## After 10 weeks
+## After 10 calendar weeks
 
-Soha should be able to write Python independently, build 4–5 games, ship a pygame capstone, and demo a Flask app — ready for **Outschool Level 2+** in the fall if she wants more.
+Soha completes **all 50 Outschool sessions** (Levels 1–4 + portfolio), 5 games, Final Boss, and Flask — ready for AI/ML Level 1 or deeper projects.
 
 ## Notes
 

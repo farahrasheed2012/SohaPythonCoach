@@ -23,7 +23,7 @@ struct JourneyView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Hi, \(appState.studentName)! 👋")
                     .font(.largeTitle.bold())
-                Text("\(weekCount) weeks · same schedule as Science Bowl · 5 games")
+                Text("\(weekCount) calendar weeks · 50 Outschool sessions · 5 games")
                     .foregroundStyle(.secondary)
             }
             Spacer()

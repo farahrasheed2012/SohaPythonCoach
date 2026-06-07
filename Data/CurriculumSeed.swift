@@ -7,6 +7,10 @@ enum CurriculumSeed {
         OutcomeGoal(id: "o3", title: "Understand core logic", detail: "Variables, if/else, loops, functions, lists, and game loops."),
         OutcomeGoal(id: "o4", title: "Live class skills", detail: "GUI (Tkinter), data viz, web apps (Flask), and presenting your projects."),
         OutcomeGoal(id: "o5", title: "Ready for what's next", detail: "Scratch → AI tools → app development with confidence."),
+        OutcomeGoal(id: "o6", title: "Outschool Level 2", detail: "Error handling, OOP, APIs, pandas, matplotlib, and intro to machine learning."),
+        OutcomeGoal(id: "o7", title: "Outschool Level 3", detail: "Tkinter GUIs, Tic-Tac-Toe, cipher app, recursion, APIs, and a final project."),
+        OutcomeGoal(id: "o8", title: "Outschool Level 4", detail: "Paradigms, OOP, algorithms, data structures, AI/ML, APIs, and capstone planning."),
+        OutcomeGoal(id: "o9", title: "Level 4 Portfolio", detail: "Seven portfolio projects plus final capstone and graduation showcase."),
     ]
 
     static let finalChallenge: [FinalChallengeRequirement] = [
@@ -349,9 +353,7 @@ assert "time_left" in user_code or "timer" in user_code.lower()
         ),
     ]
 
-    static let weeks: [WeekUnit] = [
-        week1, week2, week3, week4, week5, week6, week7, week8, week9, week10,
-    ]
+    // `summerWeeks` is defined at the bottom after all track weeks (week1–week50).
 
     // MARK: - Outschool live lessons (60 min each)
 
@@ -2778,7 +2780,7 @@ print("Polish checklist: styling · delete · mobile-friendly · tested")
             LessonStep(
                 id: "w10-l3",
                 title: "Portfolio & next steps",
-                body: "Summer complete! Export progress, screenshot Coin Collector, Science Quiz, and Todo app. Outschool Level 2+ continues in the fall if you want more.",
+                body: "Full path complete! Levels 1–4 plus portfolio. Export progress and screenshot your best projects.",
                 teacherScript: "Celebrate! Screenshot Coin Collector, Todo app, and quiz game for a portfolio folder.",
                 tryItPrompt: "Progress tab → Export progress JSON as backup.",
                 starterCode: """
@@ -3194,4 +3196,110 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         skills: ["presentation", "graduation", "portfolio", "showcase"],
         lessons: [portfolio10]
     )
+
+    // MARK: - Summer calendar (10 weeks · 5 Outschool sessions each)
+
+    private static func bundleTrackWeeks(
+        id: Int,
+        title: String,
+        subtitle: String,
+        emoji: String,
+        goal: String,
+        sources: [WeekUnit]
+    ) -> WeekUnit {
+        WeekUnit(
+            id: id,
+            title: title,
+            subtitle: subtitle,
+            emoji: emoji,
+            goal: goal,
+            skills: Array(Set(sources.flatMap(\.skills))),
+            lessons: sources.flatMap(\.lessons)
+        )
+    }
+
+    static let weeks: [WeekUnit] = summerWeeks
+
+    private static let summerWeeks: [WeekUnit] = [
+        bundleTrackWeeks(
+            id: 1,
+            title: "Level 1 · Weeks 1–5",
+            subtitle: "Pass 1 · Jun 8–12 · Foundations",
+            emoji: "👋",
+            goal: "Python basics through your first games — print, decisions, loops, functions, and text games.",
+            sources: [week1, week2, week3, week4, week5]
+        ),
+        bundleTrackWeeks(
+            id: 2,
+            title: "Level 1 · Weeks 6–10",
+            subtitle: "Pass 1 · Jun 15–19 · Building depth",
+            emoji: "🎮",
+            goal: "Lists, Science Bowl quiz game, pygame intro, Final Boss, Flask, and Level 1 graduation.",
+            sources: [week6, week7, week8, week9, week10]
+        ),
+        bundleTrackWeeks(
+            id: 3,
+            title: "Level 2 · Weeks 1–5",
+            subtitle: "Pass 1 · Jun 22–26 · Mid-level mastery",
+            emoji: "🛡️",
+            goal: "Error handling, Caesar cipher, OOP, APIs, and the weather app project.",
+            sources: [week11, week12, week13, week14, week15]
+        ),
+        bundleTrackWeeks(
+            id: 4,
+            title: "Level 2 · Weeks 6–10",
+            subtitle: "Pass 1 · Jun 29–Jul 3 · Round-ready",
+            emoji: "📊",
+            goal: "Pandas, Matplotlib, lambda, scikit-learn ML, and Level 2 graduation.",
+            sources: [week16, week17, week18, week19, week20]
+        ),
+        bundleTrackWeeks(
+            id: 5,
+            title: "Level 3 · Weeks 1–5",
+            subtitle: "Pass 2 · Jul 6–10 · Foundations (again)",
+            emoji: "📝",
+            goal: "Tkinter text editor, Tic-Tac-Toe, cipher app, recursion, and live API data.",
+            sources: [week21, week22, week23, week24, week25]
+        ),
+        bundleTrackWeeks(
+            id: 6,
+            title: "Level 3 · Weeks 6–10",
+            subtitle: "Pass 2 · Jul 13–17 · Building depth (again)",
+            emoji: "💾",
+            goal: "JSON persistence, pygame review, OOP integration, and Level 3 capstone.",
+            sources: [week26, week27, week28, week29, week30]
+        ),
+        bundleTrackWeeks(
+            id: 7,
+            title: "Level 4 · Weeks 1–5",
+            subtitle: "Pass 2 · Jul 20–24 · Mid-level mastery (again)",
+            emoji: "🧮",
+            goal: "Programming paradigms, OOP adventure, functional Python, algorithms, and pathfinding.",
+            sources: [week31, week32, week33, week34, week35]
+        ),
+        bundleTrackWeeks(
+            id: 8,
+            title: "Level 4 · Weeks 6–10",
+            subtitle: "Pass 2 · Jul 27–31 · Round-ready (again)",
+            emoji: "🤖",
+            goal: "AI/ML, Tkinter for ML, weather APIs, capstone planning, and Level 4 live graduation.",
+            sources: [week36, week37, week38, week39, week40]
+        ),
+        bundleTrackWeeks(
+            id: 9,
+            title: "Portfolio · Weeks 1–5",
+            subtitle: "Pass 3 · Aug 3–7 · Final review (1 of 2)",
+            emoji: "🔨",
+            goal: "Ship calculator, adventure game, algorithm viz, pathfinding, and weather ML portfolio labs.",
+            sources: [week41, week42, week43, week44, week45]
+        ),
+        bundleTrackWeeks(
+            id: 10,
+            title: "Portfolio · Weeks 6–10",
+            subtitle: "Pass 3 · Aug 10–14 · Final review (2 of 2)",
+            emoji: "🎓",
+            goal: "GUI portfolio lab, final project sprints, polish, and Level 4 graduation showcase.",
+            sources: [week46, week47, week48, week49, week50]
+        ),
+    ]
 }
