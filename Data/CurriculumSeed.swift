@@ -5,7 +5,8 @@ enum CurriculumSeed {
         OutcomeGoal(id: "o1", title: "Write Python independently", detail: "Open a file, run code, fix errors without step-by-step help."),
         OutcomeGoal(id: "o2", title: "Build 4–5 games", detail: "Text games first, then pygame games with graphics, sound, and scoring."),
         OutcomeGoal(id: "o3", title: "Understand core logic", detail: "Variables, if/else, loops, functions, lists, and game loops."),
-        OutcomeGoal(id: "o4", title: "Ready for what's next", detail: "Scratch → AI tools → app development with confidence."),
+        OutcomeGoal(id: "o4", title: "Live class skills", detail: "GUI (Tkinter), data viz, web apps (Flask), and presenting your projects."),
+        OutcomeGoal(id: "o5", title: "Ready for what's next", detail: "Scratch → AI tools → app development with confidence."),
     ]
 
     static let finalChallenge: [FinalChallengeRequirement] = [
@@ -349,8 +350,355 @@ assert "time_left" in user_code or "timer" in user_code.lower()
     ]
 
     static let weeks: [WeekUnit] = [
-        week1, week2, week3, week4, week5, week6, week7, week8,
+        week1, week2, week3, week4, week5, week6, week7, week8, week9, week10,
     ]
+
+    // MARK: - Outschool live lessons (60 min each)
+
+    private static func outschoolLive(
+        week: Int,
+        sessionNumber: Int,
+        title: String,
+        body: String,
+        teacherScript: String,
+        tryItPrompt: String? = nil,
+        starterCode: String? = nil,
+        challengeQuestion: String? = nil,
+        challengeAnswer: String? = nil,
+        challengeAcceptedAnswers: [String]? = nil,
+        codeTests: [CodeTest]? = nil
+    ) -> LessonStep {
+        LessonStep(
+            id: "w\(week)-live",
+            title: "Live Lesson \(sessionNumber): \(title)",
+            body: body,
+            teacherScript: teacherScript,
+            tryItPrompt: tryItPrompt,
+            starterCode: starterCode,
+            challengeQuestion: challengeQuestion,
+            challengeAnswer: challengeAnswer,
+            challengeAcceptedAnswers: challengeAcceptedAnswers,
+            codeTests: codeTests,
+            format: .liveOnline,
+            durationMinutes: 60
+        )
+    }
+
+    private static let live1 = outschoolLive(
+        week: 1,
+        sessionNumber: 1,
+        title: "Foundations of Python Programming",
+        body: """
+Review variables, conditional statements, and functions. Apply them in a Fizz Buzz mini-project and explore nested conditionals. Finish with scope, the global keyword, and the pass statement — a solid foundation for the rest of the course.
+
+60 min online live lesson with instructor.
+""",
+        teacherScript: "Before class: confirm Zoom/Outschool link and that python3 works. After class, have Soha run Fizz Buzz in the Playground without looking at notes.",
+        tryItPrompt: "After live class: run Fizz Buzz for numbers 1–20 in Playground.",
+        starterCode: """
+# Fizz Buzz — print 1 to 20
+for n in range(1, 21):
+    if n % 15 == 0:
+        print("FizzBuzz")
+    elif n % 3 == 0:
+        print("Fizz")
+    elif n % 5 == 0:
+        print("Buzz")
+    else:
+        print(n)
+""",
+        challengeQuestion: "In Fizz Buzz, what do you print when n is divisible by both 3 and 5?",
+        challengeAnswer: "FizzBuzz",
+        challengeAcceptedAnswers: ["fizzbuzz"]
+    )
+
+    private static let live2 = outschoolLive(
+        week: 2,
+        sessionNumber: 2,
+        title: "Planning and Project Development",
+        body: """
+Learn why planning matters in coding. Use flowcharts and brainstorming to break problems down. Main project: Outschool Pizza Shop — a multi-day build that reinforces variables, input, and conditionals in a practical context.
+
+60 min online live lesson with instructor.
+""",
+        teacherScript: "Ask Soha to explain her Pizza Shop plan in her own words before coding. Save the flowchart photo in week notes.",
+        tryItPrompt: "Sketch a flowchart on paper before opening Playground.",
+        starterCode: """
+# Pizza Shop order taker
+menu = {"cheese": 8, "pepperoni": 10, "veggie": 9}
+order = []
+
+print("Welcome to Soha's Pizza!")
+while True:
+    choice = input("Pick (cheese/pepperoni/veggie/done): ").lower()
+    if choice == "done":
+        break
+    if choice in menu:
+        order.append(choice)
+        print("Added", choice)
+    else:
+        print("Not on menu.")
+
+total = sum(menu[pizza] for pizza in order)
+print("Order:", order)
+print("Total: $", total)
+""",
+        challengeQuestion: "What planning tool helps break a big project into steps?",
+        challengeAnswer: "flowchart",
+        challengeAcceptedAnswers: ["brainstorm", "brainstorming"]
+    )
+
+    private static let live3 = outschoolLive(
+        week: 3,
+        sessionNumber: 3,
+        title: "Advanced Python Concepts",
+        body: """
+Explore Python methods — string and math methods. Learn ternary operators for concise conditionals. Study Python keywords and reserved words to write cleaner, more readable code.
+
+60 min online live lesson with instructor.
+""",
+        teacherScript: "Have Soha predict what .strip() and .title() do before running. Compare if/else vs ternary for the same problem.",
+        starterCode: """
+name = "  soha  "
+print("Clean name:", name.strip().title())
+print("Absolute value:", abs(-7))
+
+grade = 85
+letter = "A" if grade >= 90 else "B" if grade >= 80 else "C"
+print("Grade:", letter)
+
+# Reserved words — you cannot use these as variable names:
+# if, else, def, class, import, return, ...
+""",
+        challengeQuestion: "What does the ternary operator let you write in one line?",
+        challengeAnswer: "if else",
+        challengeAcceptedAnswers: ["conditional", "if/else"]
+    )
+
+    private static let live4 = outschoolLive(
+        week: 4,
+        sessionNumber: 4,
+        title: "File Operations and Loops",
+        body: """
+Read from, write to, and append to files. Create your own files and manipulate data inside them. Comprehensive loop review with a focus on while loops for repetitive tasks and data processing.
+
+60 min online live lesson with instructor.
+""",
+        teacherScript: "After class, open the saved file in TextEdit together so Soha sees the file on disk matches her code.",
+        tryItPrompt: "Find notes.txt in Application Support scripts folder after saving.",
+        starterCode: """
+filename = "notes.txt"
+
+with open(filename, "w") as f:
+    f.write("Hello from Soha!\\n")
+
+with open(filename, "a") as f:
+    f.write("Python files are just text.\\n")
+
+with open(filename) as f:
+    content = f.read()
+    print("File contents:")
+    print(content)
+
+# while loop review
+count = 0
+while count < 3:
+    print("Loop round", count + 1)
+    count += 1
+""",
+        challengeQuestion: "Which mode opens a file for appending without erasing it?",
+        challengeAnswer: "a",
+        challengeAcceptedAnswers: ["append", "a mode"]
+    )
+
+    private static let live5 = outschoolLive(
+        week: 5,
+        sessionNumber: 5,
+        title: "Data Structures and Advanced Function Concepts",
+        body: """
+Introduce tuples as a data structure. Learn function default parameters, return statements, and variable arguments (*args) for flexible, powerful functions.
+
+60 min online live lesson with instructor.
+""",
+        teacherScript: "Compare list vs tuple — why might coordinates be a tuple? Demo *args with different numbers of arguments.",
+        starterCode: """
+# Tuples — ordered, cannot change items
+point = (3, 4)
+print("x:", point[0], "y:", point[1])
+
+def greet(name, greeting="Hello"):
+    print(greeting + ",", name)
+
+greet("Soha")
+greet("Soha", "Hi")
+
+def total(*numbers):
+    return sum(numbers)
+
+print("Sum:", total(1, 2, 3, 4))
+print("Sum:", total(10, 20))
+""",
+        challengeQuestion: "What symbol collects extra arguments into a tuple?",
+        challengeAnswer: "*args",
+        challengeAcceptedAnswers: ["star args", "asterisk"]
+    )
+
+    private static let live6 = outschoolLive(
+        week: 6,
+        sessionNumber: 6,
+        title: "Graphical User Interfaces with Python",
+        body: """
+GUI development with Tkinter: windows, buttons, labels, and events. Main project: Outschool Interactive Calendar Application — apply GUI skills in a practical, engaging build.
+
+60 min online live lesson with instructor.
+""",
+        teacherScript: "Tkinter runs in a window — use Run game window or Terminal like pygame. Celebrate the first button click!",
+        tryItPrompt: "Add a second button that prints today's date.",
+        starterCode: """
+import tkinter as tk
+
+root = tk.Tk()
+root.title("Soha Calendar")
+root.geometry("300x200")
+
+tk.Label(root, text="March 2026", font=("Arial", 16)).pack(pady=10)
+tk.Button(root, text="Today", command=lambda: print("Today clicked!")).pack(pady=5)
+tk.Button(root, text="Quit", command=root.destroy).pack(pady=5)
+
+root.mainloop()
+""",
+        challengeQuestion: "Which Python library is used for basic GUIs in this lesson?",
+        challengeAnswer: "tkinter",
+        challengeAcceptedAnswers: ["Tkinter"]
+    )
+
+    private static let live7 = outschoolLive(
+        week: 7,
+        sessionNumber: 7,
+        title: "Introduction to Data Science with Python",
+        body: """
+Introduction to data science: graphing with NumPy and Matplotlib. Build a Python Graph Application to analyze and visualize real-world data.
+
+60 min online live lesson with instructor.
+""",
+        teacherScript: "Before class: pip3 install matplotlib numpy. Connect graphs to Science Bowl — plot practice quiz scores over time.",
+        tryItPrompt: "pip3 install matplotlib numpy",
+        starterCode: """
+# pip3 install matplotlib numpy
+import matplotlib.pyplot as plt
+
+quiz_scores = [70, 85, 90, 88, 92]
+days = [1, 2, 3, 4, 5]
+
+plt.plot(days, quiz_scores, marker="o")
+plt.title("Science Quiz Scores")
+plt.xlabel("Week")
+plt.ylabel("Score")
+plt.ylim(0, 100)
+plt.show()
+""",
+        challengeQuestion: "Which library draws graphs in this lesson?",
+        challengeAnswer: "matplotlib",
+        challengeAcceptedAnswers: ["pyplot"]
+    )
+
+    private static let live8 = outschoolLive(
+        week: 8,
+        sessionNumber: 8,
+        title: "Game Development with PyGame Zero",
+        body: """
+Game development with PyGame Zero: game loops, sprites, and event handling. Documentation matters! Apply concepts in a Space Explorer Game — simple but engaging.
+
+60 min online live lesson with instructor.
+""",
+        teacherScript: "Link to Coin Collector Final Boss — same ideas: loop, sprites, events. Compare pygame vs pgzero syntax after class.",
+        tryItPrompt: "After live class, add one sprite to your Coin Collector game.",
+        starterCode: """
+# Space Explorer — plan before coding
+# pip3 install pgzero   OR continue with pygame from Final Boss
+
+print("=== Space Explorer Plan ===")
+print("1. Game loop (update every frame)")
+print("2. Player ship sprite + movement")
+print("3. Asteroid sprites + collision")
+print("4. Score + game over screen")
+print("5. Read docs: pygame.org or pgzero.readthedocs.io")
+""",
+        challengeQuestion: "Name two things every game loop needs to handle.",
+        challengeAnswer: "events update",
+        challengeAcceptedAnswers: ["events and update", "input and draw", "sprites events"]
+    )
+
+    private static let live9 = outschoolLive(
+        week: 9,
+        sessionNumber: 9,
+        title: "Web Development with Python Flask",
+        body: """
+Web development with Flask: set up a server, handle routes, and work with HTML templates. Begin the Todo List Application — form handling and basic data storage.
+
+60 min online live lesson with instructor.
+""",
+        teacherScript: "Flask runs in Terminal, not the in-app Playground. After class, bookmark localhost page together.",
+        tryItPrompt: "pip3 install flask — then save and run in Terminal.",
+        starterCode: """
+# pip3 install flask
+# Save as todo_app.py and run: python3 todo_app.py
+# Open http://127.0.0.1:5000 in Safari
+
+from flask import Flask, request, redirect
+
+app = Flask(__name__)
+todos = []
+
+@app.route("/")
+def home():
+    items = "".join(f"<li>{t}</li>" for t in todos)
+    form = '<form action="/add" method="post"><input name="task"><button>Add</button></form>'
+    return f"<h1>Soha Todo List</h1><ul>{items}</ul>{form}"
+
+@app.route("/add", methods=["POST"])
+def add():
+    task = request.form.get("task", "").strip()
+    if task:
+        todos.append(task)
+    return redirect("/")
+
+if __name__ == "__main__":
+    app.run(debug=True)
+""",
+        challengeQuestion: "What URL do you open to see your Flask app locally?",
+        challengeAnswer: "127.0.0.1:5000",
+        challengeAcceptedAnswers: ["localhost:5000", "localhost"]
+    )
+
+    private static let live10 = outschoolLive(
+        week: 10,
+        sessionNumber: 10,
+        title: "Project Completion and Student Presentations",
+        body: """
+Complete the Todo List Application — final features and basic styling. Present your final project: demo what you learned across all 10 live lessons and get feedback.
+
+60 min online live lesson with instructor.
+""",
+        teacherScript: "Practice the 2-minute demo at home first. Progress tab → export backup before presentation day.",
+        tryItPrompt: "Rehearse: 30 sec intro · 60 sec demo · 30 sec what you learned.",
+        starterCode: """
+print("=== Presentation Checklist ===")
+print("[ ] Todo app adds and shows tasks")
+print("[ ] Added CSS or styling")
+print("[ ] Tested in browser")
+print("[ ] 2-minute demo rehearsed")
+print("[ ] Ready to show Coin Collector OR Todo app")
+print()
+print("What I learned:")
+print("- Fizz Buzz & functions")
+print("- Pizza Shop planning")
+print("- Files, GUIs, graphs, games, Flask")
+""",
+        challengeQuestion: "How long should your live demo be?",
+        challengeAnswer: "2 minutes",
+        challengeAcceptedAnswers: ["two minutes", "2 min"]
+    )
 
     private static let week1 = WeekUnit(
         id: 1,
@@ -358,7 +706,7 @@ assert "time_left" in user_code or "timer" in user_code.lower()
         subtitle: "Print, variables, and your first program",
         emoji: "👋",
         goal: "Run Python and make the computer talk back.",
-        skills: ["print()", "strings", "variables", "running .py files"],
+        skills: ["print()", "strings", "variables", "Fizz Buzz", "scope"],
         lessons: [
             LessonStep(
                 id: "w1-l1",
@@ -432,6 +780,7 @@ print("Favorite color: blue")
                 challengeQuestion: nil,
                 challengeAnswer: nil
             ),
+            live1,
         ]
     )
 
@@ -441,7 +790,7 @@ print("Favorite color: blue")
         subtitle: "input() and if / else",
         emoji: "🔀",
         goal: "Programs that react to what the user types.",
-        skills: ["input()", "int()", "if", "else", "elif"],
+        skills: ["input()", "int()", "if", "else", "elif", "flowcharts", "planning"],
         lessons: [
             LessonStep(
                 id: "w2-l1",
@@ -492,6 +841,7 @@ else:
                 challengeQuestion: nil,
                 challengeAnswer: nil
             ),
+            live2,
         ]
     )
 
@@ -501,7 +851,7 @@ else:
         subtitle: "Repeat without copy-paste",
         emoji: "🔁",
         goal: "Use while and for to repeat actions.",
-        skills: ["while", "for", "range()"],
+        skills: ["while", "for", "range()", "methods", "ternary"],
         lessons: [
             LessonStep(
                 id: "w3-l1",
@@ -549,6 +899,7 @@ for i in range(1, 11):
                 challengeQuestion: nil,
                 challengeAnswer: nil
             ),
+            live3,
         ]
     )
 
@@ -558,7 +909,7 @@ for i in range(1, 11):
         subtitle: "Reusable blocks of code",
         emoji: "🧩",
         goal: "Write def functions you can call many times.",
-        skills: ["def", "parameters", "return"],
+        skills: ["def", "parameters", "return", "files", "read/write"],
         lessons: [
             LessonStep(
                 id: "w4-l1",
@@ -617,6 +968,7 @@ print(multiply(6, 7))
                 challengeQuestion: nil,
                 challengeAnswer: nil
             ),
+            live4,
         ]
     )
 
@@ -626,7 +978,7 @@ print(multiply(6, 7))
         subtitle: "Guess the Number & Rock Paper Scissors",
         emoji: "🎮",
         goal: "Combine everything into playable text games.",
-        skills: ["random", "game loop", "score"],
+        skills: ["random", "game loop", "score", "tuples", "*args"],
         lessons: [
             LessonStep(
                 id: "w5-l1",
@@ -663,6 +1015,7 @@ print("You rolled", dice)
                 challengeQuestion: nil,
                 challengeAnswer: nil
             ),
+            live5,
         ]
     )
 
@@ -672,7 +1025,7 @@ print("You rolled", dice)
         subtitle: "Store many items in one variable",
         emoji: "📋",
         goal: "Use lists to power a quiz game.",
-        skills: ["lists", "index", "len()"],
+        skills: ["lists", "index", "len()", "Tkinter", "GUI"],
         lessons: [
             LessonStep(
                 id: "w6-l1",
@@ -726,6 +1079,7 @@ for c in colors:
                 challengeAnswer: "5",
                 challengeAcceptedAnswers: ["five"]
             ),
+            live6,
         ]
     )
 
@@ -735,7 +1089,7 @@ for c in colors:
         subtitle: "Coordinates and graphics",
         emoji: "🗺️",
         goal: "Move from text games to a window with shapes.",
-        skills: ["coordinates", "pygame basics", "event loop"],
+        skills: ["coordinates", "pygame basics", "event loop", "matplotlib", "numpy"],
         lessons: [
             LessonStep(
                 id: "w7-l1",
@@ -783,6 +1137,7 @@ pygame.quit()
                 challengeQuestion: nil,
                 challengeAnswer: nil
             ),
+            live7,
         ]
     )
 
@@ -792,7 +1147,7 @@ pygame.quit()
         subtitle: "Sound · 3 coins · Timer",
         emoji: "🏆",
         goal: "Ship the capstone Coin Collector game.",
-        skills: ["game loop", "collision", "sound", "timer", "win/lose"],
+        skills: ["game loop", "collision", "sound", "timer", "win/lose", "pgzero"],
         lessons: [
             LessonStep(
                 id: "w8-l1",
@@ -827,6 +1182,86 @@ pygame.quit()
                 teacherScript: "This is your portfolio piece — take a screen recording when it works!",
                 tryItPrompt: "Mark all three checkboxes when done.",
                 starterCode: games[4].starterCode,
+                challengeQuestion: nil,
+                challengeAnswer: nil
+            ),
+            live8,
+        ]
+    )
+
+    private static let week9 = WeekUnit(
+        id: 9,
+        title: "Web Development",
+        subtitle: "Flask & Todo List app",
+        emoji: "🌐",
+        goal: "Build a web app that runs in the browser.",
+        skills: ["Flask", "routes", "HTML", "forms", "localhost"],
+        lessons: [
+            LessonStep(
+                id: "w9-l1",
+                title: "How web apps work",
+                body: "A Flask app runs a server on your Mac. The browser sends requests; Python sends back HTML pages.",
+                teacherScript: "Compare to Science Bowl Coach — that's a native app; Flask is a website on your own computer.",
+                tryItPrompt: "pip3 install flask",
+                starterCode: """
+print("Browser  →  request  →  Flask  →  HTML response")
+print("Try: python3 todo_app.py then open Safari")
+""",
+                challengeQuestion: "What command installs Flask?",
+                challengeAnswer: "pip3 install flask",
+                challengeAcceptedAnswers: ["pip install flask"]
+            ),
+            live9,
+            LessonStep(
+                id: "w9-l3",
+                title: "Extend your Todo app",
+                body: "After live class: add delete tasks, mark complete, or a counter in the page title.",
+                teacherScript: "One feature at a time. Save todo_app.py in the scripts folder.",
+                tryItPrompt: "Add a route /clear that empties the todo list.",
+                starterCode: live9.starterCode,
+                challengeQuestion: nil,
+                challengeAnswer: nil
+            ),
+        ]
+    )
+
+    private static let week10 = WeekUnit(
+        id: 10,
+        title: "Graduation & Presentations",
+        subtitle: "Showcase your projects",
+        emoji: "🎓",
+        goal: "Ship the Todo app and present everything you built.",
+        skills: ["presentation", "polish", "portfolio", "demo"],
+        lessons: [
+            LessonStep(
+                id: "w10-l1",
+                title: "Polish your Todo app",
+                body: "Add styling, test every button, and fix bugs before presentation day.",
+                teacherScript: "Good demos fail gracefully — have a backup screen recording.",
+                tryItPrompt: "Add inline CSS: style the h1 and button colors.",
+                starterCode: """
+# In your Flask home() return string, wrap with:
+# <style>body{font-family:sans-serif;background:#1a1a2e;color:white;}</style>
+print("Polish checklist: styling · delete · mobile-friendly · tested")
+""",
+                challengeQuestion: nil,
+                challengeAnswer: nil
+            ),
+            live10,
+            LessonStep(
+                id: "w10-l3",
+                title: "Portfolio & next steps",
+                body: "You completed 10 live lessons + self-paced games + Final Boss. Export progress and keep coding!",
+                teacherScript: "Celebrate! Screenshot Coin Collector, Todo app, and quiz game for a portfolio folder.",
+                tryItPrompt: "Progress tab → Export progress JSON as backup.",
+                starterCode: """
+print("=== Soha Python Portfolio ===")
+print("1. Coin Collector (pygame)")
+print("2. Science Quiz game")
+print("3. Todo List (Flask)")
+print("4. Tkinter Calendar")
+print("Next: SwiftUI apps · AI tools · more Flask")
+""",
                 challengeQuestion: nil,
                 challengeAnswer: nil
             ),

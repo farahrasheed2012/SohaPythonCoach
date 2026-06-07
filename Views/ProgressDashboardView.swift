@@ -128,7 +128,7 @@ struct ProgressDashboardView: View {
                     .textFieldStyle(.roundedBorder)
                 }
 
-                Card(title: "What's next after 8 weeks", accent: .cyan) {
+                Card(title: "What's next after \(appState.weeks.count) weeks", accent: .cyan) {
                     VStack(alignment: .leading, spacing: 8) {
                         nextStep("Scratch", "Visual blocks — connects to loops & events she already knows")
                         nextStep("AI tools", "Prompt engineering, small automations with Python")

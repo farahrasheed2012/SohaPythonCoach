@@ -15,11 +15,18 @@ struct LessonDetailView: View {
             VStack(alignment: .leading, spacing: 20) {
                 headerRow
 
-                Card(title: lesson.title, subtitle: "Week \(week.id)", accent: .purple) {
+                Card(title: lesson.title, subtitle: lessonSubtitle, accent: lesson.isLiveLesson ? .blue : .purple) {
                     Text(lesson.body)
                 }
 
-                Card(title: "Teacher script", subtitle: "Words for parent/coach", accent: .orange) {
+                if lesson.isLiveLesson {
+                    Card(title: "Online live class", subtitle: "Outschool · 60 minutes", accent: .blue) {
+                        Text("Join the scheduled live session with your instructor. After class, complete the Try it task in Playground.")
+                            .font(.subheadline)
+                    }
+                }
+
+                Card(title: lesson.isLiveLesson ? "Coach notes" : "Teacher script", subtitle: "Words for parent/coach", accent: .orange) {
                     Text(lesson.teacherScript)
                         .italic()
                 }
@@ -61,6 +68,13 @@ struct LessonDetailView: View {
         }
         .coachPageBackground()
         .navigationTitle(lesson.title)
+    }
+
+    private var lessonSubtitle: String {
+        if lesson.isLiveLesson, let mins = lesson.durationMinutes {
+            return "Week \(week.id) · Live · \(mins) min"
+        }
+        return "Week \(week.id)"
     }
 
     private var headerRow: some View {

@@ -21,6 +21,11 @@ struct CodeTest: Identifiable, Hashable, Codable {
     }
 }
 
+enum LessonFormat: String, Codable, Hashable {
+    case selfPaced
+    case liveOnline
+}
+
 struct LessonStep: Identifiable, Hashable, Codable {
     let id: String
     let title: String
@@ -35,6 +40,8 @@ struct LessonStep: Identifiable, Hashable, Codable {
     let challengeAcceptedAnswers: [String]?
     /// Optional auto-graded Python checks (run in Playground).
     let codeTests: [CodeTest]?
+    let format: LessonFormat
+    let durationMinutes: Int?
 
     init(
         id: String,
@@ -46,7 +53,9 @@ struct LessonStep: Identifiable, Hashable, Codable {
         challengeQuestion: String? = nil,
         challengeAnswer: String? = nil,
         challengeAcceptedAnswers: [String]? = nil,
-        codeTests: [CodeTest]? = nil
+        codeTests: [CodeTest]? = nil,
+        format: LessonFormat = .selfPaced,
+        durationMinutes: Int? = nil
     ) {
         self.id = id
         self.title = title
@@ -58,7 +67,11 @@ struct LessonStep: Identifiable, Hashable, Codable {
         self.challengeAnswer = challengeAnswer
         self.challengeAcceptedAnswers = challengeAcceptedAnswers
         self.codeTests = codeTests
+        self.format = format
+        self.durationMinutes = durationMinutes
     }
+
+    var isLiveLesson: Bool { format == .liveOnline }
 
     var allAcceptedAnswers: [String] {
         var answers: [String] = []

@@ -17,6 +17,7 @@ struct PlaygroundView: View {
     @State private var testResults: [PythonRunner.TestRunResult] = []
     @State private var statusMessage: String?
 
+    private var needsTerminal: Bool { PythonRunner.needsTerminalLaunch(code) }
     private var isPygame: Bool { PythonRunner.containsPygame(code) }
 
     var body: some View {
@@ -53,6 +54,13 @@ struct PlaygroundView: View {
                     .padding(.vertical, 2)
                     .background(Color.orange.opacity(0.2))
                     .clipShape(Capsule())
+            } else if needsTerminal {
+                Text("run in Terminal")
+                    .font(.caption2.weight(.bold))
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(Color.cyan.opacity(0.2))
+                    .clipShape(Capsule())
             }
             Spacer()
             Button("Reset") {
@@ -67,11 +75,11 @@ struct PlaygroundView: View {
                 }
                 .disabled(isRunning)
             }
-            if isPygame {
+            if needsTerminal {
                 Button {
                     launchPygame()
                 } label: {
-                    Label("Run game window", systemImage: "play.rectangle")
+                    Label(isPygame ? "Run game window" : "Run script", systemImage: "play.rectangle")
                 }
                 Button {
                     openTerminal()
@@ -194,8 +202,8 @@ struct PlaygroundView: View {
     private func runCode() async {
         isRunning = true
         defer { isRunning = false }
-        if isPygame {
-            output = "This script uses pygame. Click Run game window or Open in Terminal."
+        if needsTerminal {
+            output = "This script needs a window or server. Use Run script or Open in Terminal."
             return
         }
         let result = await PythonRunner.run(code: code)

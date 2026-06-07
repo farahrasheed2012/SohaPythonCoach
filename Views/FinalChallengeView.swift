@@ -68,7 +68,7 @@ struct FinalChallengeView: View {
 
                 Card(title: "Graduation checklist", accent: .blue) {
                     VStack(alignment: .leading, spacing: 6) {
-                        checklistRow("All 8 weeks of lessons complete", appState.progressFraction >= 0.95)
+                        checklistRow("All \(appState.weeks.count) weeks of lessons complete", appState.progressFraction >= 0.95)
                         checklistRow("At least 4 games built", appState.completedGames.count >= 4)
                         checklistRow("Final challenge: sound", appState.finalChallengeChecks.contains("fc-sound"))
                         checklistRow("Final challenge: 3 coins", appState.finalChallengeChecks.contains("fc-coins"))

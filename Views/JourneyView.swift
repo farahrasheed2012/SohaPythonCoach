@@ -13,15 +13,17 @@ struct JourneyView: View {
             .padding(24)
         }
         .coachPageBackground()
-        .navigationTitle("8-Week Journey")
+        .navigationTitle("\(appState.weeks.count)-Week Journey")
     }
+
+    private var weekCount: Int { appState.weeks.count }
 
     private var header: some View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Hi, \(appState.studentName)! 👋")
                     .font(.largeTitle.bold())
-                Text("8 weeks · Python · 5 games · Final boss challenge")
+                Text("\(weekCount) weeks · self-paced + 10 live lessons · 5 games · Final boss")
                     .foregroundStyle(.secondary)
             }
             Spacer()
@@ -30,7 +32,7 @@ struct JourneyView: View {
     }
 
     private var outcomeRow: some View {
-        Card(title: "After 8 weeks you will…", accent: .blue) {
+        Card(title: "After \(weekCount) weeks you will…", accent: .blue) {
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
                 ForEach(appState.outcomes) { goal in
                     VStack(alignment: .leading, spacing: 4) {
@@ -83,7 +85,7 @@ private struct WeekCard: View {
                 .lineLimit(2)
             ProgressView(value: progress)
                 .tint(.purple)
-            Text("\(week.lessons.count) lessons")
+            Text("\(week.lessons.count) lessons · \(week.lessons.filter(\.isLiveLesson).count) live")
                 .font(.caption2)
                 .foregroundStyle(.tertiary)
         }
@@ -133,6 +135,14 @@ struct WeekDetailView: View {
                                 HStack(spacing: 6) {
                                     Text(lesson.title)
                                         .font(.headline)
+                                    if lesson.isLiveLesson {
+                                        Text("Live · 60 min")
+                                            .font(.caption2.weight(.bold))
+                                            .padding(.horizontal, 6)
+                                            .padding(.vertical, 2)
+                                            .background(Color.blue.opacity(0.15))
+                                            .clipShape(Capsule())
+                                    }
                                     if appState.isStuck(lesson.id) {
                                         Image(systemName: "hand.raised.fill")
                                             .font(.caption)

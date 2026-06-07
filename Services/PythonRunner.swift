@@ -31,6 +31,18 @@ enum PythonRunner {
         code.lowercased().contains("import pygame") || code.lowercased().contains("from pygame")
     }
 
+    /// Scripts that need a real window, server, or blocking GUI — use Terminal or Run game window.
+    static func needsTerminalLaunch(_ code: String) -> Bool {
+        let lower = code.lowercased()
+        if containsPygame(code) { return true }
+        if lower.contains("import tkinter") || lower.contains("from tkinter") { return true }
+        if lower.contains("from flask") || lower.contains("import flask") { return true }
+        if lower.contains("matplotlib") || lower.contains("plt.show") { return true }
+        if lower.contains("root.mainloop") { return true }
+        if lower.contains("app.run") { return true }
+        return false
+    }
+
     @discardableResult
     static func saveScript(named filename: String, code: String) throws -> URL {
         let safe = filename.replacingOccurrences(of: " ", with: "-")
