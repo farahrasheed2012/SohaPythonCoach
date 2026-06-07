@@ -11,6 +11,7 @@ final class AppState {
     var playgroundCode: [String: String] = [:]
     var selectedWeekID: Int = 1
     var studentName: String = "Soha"
+    private var progressSchemaVersion: Int = 2
 
     private let storageKey = "SohaPythonCoach.progress.v2"
 
@@ -111,7 +112,8 @@ final class AppState {
             stuckItems: Array(stuckItems),
             playgroundCode: playgroundCode,
             selectedWeekID: selectedWeekID,
-            studentName: studentName
+            studentName: studentName,
+            schemaVersion: progressSchemaVersion
         )
         if let data = try? JSONEncoder().encode(payload) {
             UserDefaults.standard.set(data, forKey: storageKey)
@@ -122,6 +124,7 @@ final class AppState {
         if let data = UserDefaults.standard.data(forKey: storageKey),
            let payload = try? JSONDecoder().decode(StoredProgress.self, from: data) {
             apply(payload)
+            migrateWeekOrderIfNeeded()
             return
         }
         // Migrate v1
@@ -134,7 +137,38 @@ final class AppState {
             selectedWeekID = legacy.selectedWeekID
             studentName = legacy.studentName.isEmpty ? "Soha" : legacy.studentName
             save()
+            migrateWeekOrderIfNeeded()
         }
+    }
+
+    /// Remap lesson IDs after Level 3 insert (40-week → 50-week order). Runs once.
+    private func migrateWeekOrderIfNeeded() {
+        guard progressSchemaVersion < 2 else { return }
+
+        var remappedLessons = Set<String>()
+        for id in completedLessons {
+            remappedLessons.insert(Self.remappedLessonID(id) ?? id)
+        }
+        completedLessons = remappedLessons
+
+        var remappedCode: [String: String] = [:]
+        for (key, value) in playgroundCode {
+            let newKey = Self.remappedLessonID(key) ?? key
+            if remappedCode[newKey] == nil {
+                remappedCode[newKey] = value
+            }
+        }
+        playgroundCode = remappedCode
+
+        progressSchemaVersion = 2
+        save()
+    }
+
+    private static func remappedLessonID(_ id: String) -> String? {
+        guard id.hasSuffix("-live"), id.hasPrefix("w") else { return nil }
+        let weekPart = id.dropFirst().dropLast(5)
+        guard let week = Int(weekPart), (21...40).contains(week) else { return nil }
+        return "w\(week + 10)-live"
     }
 
     private func apply(_ payload: StoredProgress) {
@@ -146,6 +180,7 @@ final class AppState {
         playgroundCode = payload.playgroundCode
         selectedWeekID = payload.selectedWeekID
         studentName = payload.studentName.isEmpty ? "Soha" : payload.studentName
+        progressSchemaVersion = payload.schemaVersion ?? 1
     }
 }
 
@@ -158,6 +193,7 @@ private struct StoredProgress: Codable {
     var playgroundCode: [String: String]
     var selectedWeekID: Int
     var studentName: String
+    var schemaVersion: Int?
 }
 
 private struct LegacyStoredProgress: Codable {

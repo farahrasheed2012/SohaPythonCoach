@@ -37,7 +37,9 @@ enum PythonRunner {
         if containsPygame(code) { return true }
         if lower.contains("import tkinter") || lower.contains("from tkinter") { return true }
         if lower.contains("from flask") || lower.contains("import flask") { return true }
-        if lower.contains("matplotlib") || lower.contains("plt.show") { return true }
+        if lower.contains("import requests") || lower.contains("from requests") { return true }
+        if lower.contains("sklearn") || lower.contains("scikit") { return true }
+        if lower.contains("plt.show") { return true }
         if lower.contains("root.mainloop") { return true }
         if lower.contains("app.run") { return true }
         return false

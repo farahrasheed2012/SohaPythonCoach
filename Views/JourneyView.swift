@@ -23,7 +23,7 @@ struct JourneyView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Hi, \(appState.studentName)! 👋")
                     .font(.largeTitle.bold())
-                Text("\(weekCount) weeks · self-paced + 10 live lessons · 5 games · Final boss")
+                Text("\(weekCount) weeks · same schedule as Science Bowl · 5 games")
                     .foregroundStyle(.secondary)
             }
             Spacer()
@@ -64,6 +64,18 @@ private struct WeekCard: View {
     let week: WeekUnit
     let progress: Double
 
+    private var courseLabel: String? {
+        if week.id >= 9 { return "Pass 3" }
+        if week.id >= 5 { return "Pass 2" }
+        return "Pass 1"
+    }
+
+    private var badgeColor: Color {
+        if week.id >= 9 { return .green }
+        if week.id >= 5 { return .blue }
+        return .purple
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
@@ -74,8 +86,13 @@ private struct WeekCard: View {
                     .font(.caption.weight(.bold))
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .background(Color.purple.opacity(0.15))
+                    .background(badgeColor.opacity(0.15))
                     .clipShape(Capsule())
+            }
+            if let courseLabel {
+                Text(courseLabel)
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(badgeColor)
             }
             Text(week.title)
                 .font(.title3.bold())
