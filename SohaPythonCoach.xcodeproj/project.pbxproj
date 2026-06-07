@@ -1,0 +1,276 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000000000000000000001 /* SohaPythonCoachApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000001 /* SohaPythonCoachApp.swift */; };
+		A10000000000000000000002 /* CurriculumModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000002 /* CurriculumModels.swift */; };
+		A10000000000000000000003 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000003 /* AppState.swift */; };
+		A10000000000000000000004 /* CurriculumSeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000004 /* CurriculumSeed.swift */; };
+		A10000000000000000000005 /* PythonRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000005 /* PythonRunner.swift */; };
+		A10000000000000000000006 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000006 /* ContentView.swift */; };
+		A10000000000000000000007 /* JourneyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000007 /* JourneyView.swift */; };
+		A10000000000000000000008 /* LessonDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000008 /* LessonDetailView.swift */; };
+		A10000000000000000000009 /* GamesGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000009 /* GamesGalleryView.swift */; };
+		A10000000000000000000010 /* FinalChallengeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000010 /* FinalChallengeView.swift */; };
+		A10000000000000000000011 /* PlaygroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000011 /* PlaygroundView.swift */; };
+		A10000000000000000000012 /* ProgressDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000012 /* ProgressDashboardView.swift */; };
+		A10000000000000000000013 /* SharedComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000013 /* SharedComponents.swift */; };
+		A10000000000000000000014 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000014 /* Assets.xcassets */; };
+		A10000000000000000000015 /* ChallengeValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000015 /* ChallengeValidator.swift */; };
+		A10000000000000000000016 /* ProgressBackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000016 /* ProgressBackupService.swift */; };
+		A10000000000000000000017 /* PrintableResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000017 /* PrintableResources.swift */; };
+		A10000000000000000000018 /* python-coach-workbook.html in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000018 /* python-coach-workbook.html */; };
+		A10000000000000000000019 /* python-coach-teacher-script.html in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000019 /* python-coach-teacher-script.html */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		C10000000000000000000001 /* SohaPythonCoach.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SohaPythonCoach.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10000000000000000000001 /* SohaPythonCoachApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/SohaPythonCoachApp.swift; sourceTree = "<group>"; };
+		B10000000000000000000002 /* CurriculumModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/CurriculumModels.swift; sourceTree = "<group>"; };
+		B10000000000000000000003 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data/AppState.swift; sourceTree = "<group>"; };
+		B10000000000000000000004 /* CurriculumSeed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data/CurriculumSeed.swift; sourceTree = "<group>"; };
+		B10000000000000000000005 /* PythonRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/PythonRunner.swift; sourceTree = "<group>"; };
+		B10000000000000000000006 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/ContentView.swift; sourceTree = "<group>"; };
+		B10000000000000000000007 /* JourneyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/JourneyView.swift; sourceTree = "<group>"; };
+		B10000000000000000000008 /* LessonDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/LessonDetailView.swift; sourceTree = "<group>"; };
+		B10000000000000000000009 /* GamesGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/GamesGalleryView.swift; sourceTree = "<group>"; };
+		B10000000000000000000010 /* FinalChallengeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/FinalChallengeView.swift; sourceTree = "<group>"; };
+		B10000000000000000000011 /* PlaygroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/PlaygroundView.swift; sourceTree = "<group>"; };
+		B10000000000000000000012 /* ProgressDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/ProgressDashboardView.swift; sourceTree = "<group>"; };
+		B10000000000000000000013 /* SharedComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/SharedComponents.swift; sourceTree = "<group>"; };
+		B10000000000000000000014 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Resources/Assets.xcassets; sourceTree = "<group>"; };
+		B10000000000000000000015 /* ChallengeValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/ChallengeValidator.swift; sourceTree = "<group>"; };
+		B10000000000000000000016 /* ProgressBackupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/ProgressBackupService.swift; sourceTree = "<group>"; };
+		B10000000000000000000017 /* PrintableResources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/PrintableResources.swift; sourceTree = "<group>"; };
+		B10000000000000000000018 /* python-coach-workbook.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = Resources/Printable/python-coach-workbook.html; sourceTree = "<group>"; };
+		B10000000000000000000019 /* python-coach-teacher-script.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = Resources/Printable/python-coach-teacher-script.html; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D10000000000000000000001 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E10000000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000014 /* Assets.xcassets */,
+				B10000000000000000000018 /* python-coach-workbook.html */,
+				B10000000000000000000019 /* python-coach-teacher-script.html */,
+				F10000000000000000000001 /* Source Files */,
+				E10000000000000000000002 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E10000000000000000000002 = {
+			isa = PBXGroup;
+			children = (C10000000000000000000001 /* SohaPythonCoach.app */);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F10000000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000001 /* SohaPythonCoachApp.swift */,
+				B10000000000000000000002 /* CurriculumModels.swift */,
+				B10000000000000000000003 /* AppState.swift */,
+				B10000000000000000000004 /* CurriculumSeed.swift */,
+				B10000000000000000000005 /* PythonRunner.swift */,
+				B10000000000000000000015 /* ChallengeValidator.swift */,
+				B10000000000000000000016 /* ProgressBackupService.swift */,
+				B10000000000000000000017 /* PrintableResources.swift */,
+				B10000000000000000000006 /* ContentView.swift */,
+				B10000000000000000000007 /* JourneyView.swift */,
+				B10000000000000000000008 /* LessonDetailView.swift */,
+				B10000000000000000000009 /* GamesGalleryView.swift */,
+				B10000000000000000000010 /* FinalChallengeView.swift */,
+				B10000000000000000000011 /* PlaygroundView.swift */,
+				B10000000000000000000012 /* ProgressDashboardView.swift */,
+				B10000000000000000000013 /* SharedComponents.swift */,
+			);
+			name = "Source Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		G10000000000000000000001 /* SohaPythonCoach */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = H10000000000000000000002;
+			buildPhases = (
+				G10000000000000000000002 /* Sources */,
+				D10000000000000000000001 /* Frameworks */,
+				G10000000000000000000003 /* Resources */,
+			);
+			buildRules = ();
+			dependencies = ();
+			name = SohaPythonCoach;
+			productName = SohaPythonCoach;
+			productReference = C10000000000000000000001 /* SohaPythonCoach.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		I10000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+			};
+			buildConfigurationList = H10000000000000000000001;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (en, Base);
+			mainGroup = E10000000000000000000001;
+			productRefGroup = E10000000000000000000002;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (G10000000000000000000001 /* SohaPythonCoach */);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		G10000000000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000014 /* Assets.xcassets in Resources */,
+				A10000000000000000000018 /* python-coach-workbook.html in Resources */,
+				A10000000000000000000019 /* python-coach-teacher-script.html in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		G10000000000000000000002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000001 /* SohaPythonCoachApp.swift in Sources */,
+				A10000000000000000000002 /* CurriculumModels.swift in Sources */,
+				A10000000000000000000003 /* AppState.swift in Sources */,
+				A10000000000000000000004 /* CurriculumSeed.swift in Sources */,
+				A10000000000000000000005 /* PythonRunner.swift in Sources */,
+				A10000000000000000000006 /* ContentView.swift in Sources */,
+				A10000000000000000000007 /* JourneyView.swift in Sources */,
+				A10000000000000000000008 /* LessonDetailView.swift in Sources */,
+				A10000000000000000000009 /* GamesGalleryView.swift in Sources */,
+				A10000000000000000000010 /* FinalChallengeView.swift in Sources */,
+				A10000000000000000000011 /* PlaygroundView.swift in Sources */,
+				A10000000000000000000012 /* ProgressDashboardView.swift in Sources */,
+				A10000000000000000000013 /* SharedComponents.swift in Sources */,
+				A10000000000000000000015 /* ChallengeValidator.swift in Sources */,
+				A10000000000000000000016 /* ProgressBackupService.swift in Sources */,
+				A10000000000000000000017 /* PrintableResources.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		J10000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		J10000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		K10000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Python Coach";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/../Frameworks");
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.farahrasheed.SohaPythonCoach;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		K10000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Python Coach";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/../Frameworks");
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.farahrasheed.SohaPythonCoach;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		H10000000000000000000001 = {
+			isa = XCConfigurationList;
+			buildConfigurations = (J10000000000000000000001 /* Debug */, J10000000000000000000002 /* Release */);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		H10000000000000000000002 = {
+			isa = XCConfigurationList;
+			buildConfigurations = (K10000000000000000000001 /* Debug */, K10000000000000000000002 /* Release */);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = I10000000000000000000001 /* Project object */;
+}

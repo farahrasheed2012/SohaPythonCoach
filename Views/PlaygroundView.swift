@@ -1,0 +1,239 @@
+import SwiftUI
+import AppKit
+
+struct PlaygroundView: View {
+    @Environment(AppState.self) private var appState
+
+    var initialCode: String = "print(\"Hello, Soha!\")"
+    var title: String = "Playground"
+    var contextKey: String = PlaygroundContext.playground
+    var scriptFilename: String = "soha_playground.py"
+    var codeTests: [CodeTest] = []
+
+    @State private var code: String = ""
+    @State private var output = ""
+    @State private var isRunning = false
+    @State private var lastExitCode: Int32?
+    @State private var testResults: [PythonRunner.TestRunResult] = []
+    @State private var statusMessage: String?
+
+    private var isPygame: Bool { PythonRunner.containsPygame(code) }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            toolbar
+            HSplitView {
+                editorPane
+                outputPane
+            }
+            .padding(.bottom, 8)
+
+            if !codeTests.isEmpty {
+                testsPanel
+            }
+
+            footer
+        }
+        .coachPageBackground()
+        .navigationTitle("Playground")
+        .onAppear { loadCode() }
+        .onChange(of: code) { _, newValue in
+            appState.saveCode(newValue, for: contextKey)
+        }
+    }
+
+    private var toolbar: some View {
+        HStack(spacing: 12) {
+            Text(title)
+                .font(.headline)
+            if isPygame {
+                Text("pygame")
+                    .font(.caption2.weight(.bold))
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(Color.orange.opacity(0.2))
+                    .clipShape(Capsule())
+            }
+            Spacer()
+            Button("Reset") {
+                code = initialCode
+                output = ""
+                testResults = []
+                appState.saveCode(initialCode, for: contextKey)
+            }
+            if !codeTests.isEmpty {
+                Button("Run tests") {
+                    Task { await runTests() }
+                }
+                .disabled(isRunning)
+            }
+            if isPygame {
+                Button {
+                    launchPygame()
+                } label: {
+                    Label("Run game window", systemImage: "play.rectangle")
+                }
+                Button {
+                    openTerminal()
+                } label: {
+                    Label("Open in Terminal", systemImage: "terminal")
+                }
+            }
+            Button {
+                Task { await runCode() }
+            } label: {
+                Label(isRunning ? "Running…" : "Run", systemImage: "play.fill")
+            }
+            .buttonStyle(.borderedProminent)
+            .disabled(isRunning)
+            .keyboardShortcut("r", modifiers: .command)
+        }
+        .padding()
+    }
+
+    private var editorPane: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Code · auto-saved")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 12)
+            TextEditor(text: $code)
+                .font(.system(.body, design: .monospaced))
+                .scrollContentBackground(.hidden)
+                .padding(8)
+                .background(Color(nsColor: .textBackgroundColor))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .padding(.horizontal, 12)
+        }
+        .frame(minWidth: 360)
+    }
+
+    private var outputPane: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("Output")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                if let lastExitCode {
+                    Text("exit \(lastExitCode)")
+                        .font(.caption2.monospacedDigit())
+                        .foregroundStyle(lastExitCode == 0 ? .green : .orange)
+                }
+            }
+            .padding(.horizontal, 12)
+            ScrollView {
+                Text(output.isEmpty ? "Press Run (⌘R). Pygame games: use Run game window or Open in Terminal." : output)
+                    .font(.system(.body, design: .monospaced))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .textSelection(.enabled)
+                    .padding(12)
+            }
+            .background(Color(nsColor: .textBackgroundColor))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .padding(.horizontal, 12)
+        }
+        .frame(minWidth: 280)
+    }
+
+    private var testsPanel: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Auto-checks")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+            if testResults.isEmpty {
+                Text("Tap Run tests to verify your code.")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+            } else {
+                ForEach(testResults, id: \.test.id) { result in
+                    HStack(alignment: .top, spacing: 8) {
+                        Image(systemName: result.passed ? "checkmark.circle.fill" : "xmark.circle.fill")
+                            .foregroundStyle(result.passed ? .green : .red)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(result.test.label)
+                                .font(.caption.weight(.semibold))
+                            if !result.passed, let err = result.error {
+                                Text(err)
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(3)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.bottom, 8)
+    }
+
+    private var footer: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            if let statusMessage {
+                Text(statusMessage)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            HStack {
+                Image(systemName: "info.circle")
+                Text("Scripts folder: ~/Library/Application Support/SohaPythonCoach/scripts/")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(.horizontal)
+        .padding(.bottom, 12)
+    }
+
+    private func loadCode() {
+        if code.isEmpty {
+            code = appState.code(for: contextKey, default: initialCode)
+        }
+    }
+
+    private func runCode() async {
+        isRunning = true
+        defer { isRunning = false }
+        if isPygame {
+            output = "This script uses pygame. Click Run game window or Open in Terminal."
+            return
+        }
+        let result = await PythonRunner.run(code: code)
+        lastExitCode = result.exitCode
+        if let err = result.error, !err.isEmpty {
+            output = result.output + (result.output.isEmpty ? "" : "\n") + "— stderr —\n" + err
+        } else {
+            output = result.output.isEmpty ? "(no output)" : result.output
+        }
+    }
+
+    private func runTests() async {
+        isRunning = true
+        defer { isRunning = false }
+        testResults = await PythonRunner.runWithTests(userCode: code, tests: codeTests)
+        let passed = testResults.filter(\.passed).count
+        output = "Tests: \(passed)/\(codeTests.count) passed."
+    }
+
+    private func launchPygame() {
+        switch PythonRunner.launchWindowedScript(code: code, suggestedName: scriptFilename) {
+        case .success(let url):
+            statusMessage = "Launched \(url.lastPathComponent). Check for a pygame window."
+            output = "Game process started.\n\(url.path)"
+        case .failure(let err):
+            statusMessage = err.localizedDescription
+            output = err.localizedDescription
+        }
+    }
+
+    private func openTerminal() {
+        do {
+            let url = try PythonRunner.saveScript(named: scriptFilename, code: code)
+            PythonRunner.openInTerminal(scriptURL: url)
+            statusMessage = "Opened Terminal with \(url.lastPathComponent)"
+            output = "Saved to:\n\(url.path)"
+        } catch {
+            statusMessage = error.localizedDescription
+        }
+    }
+}
