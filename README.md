@@ -46,18 +46,18 @@ open ~/Library/Developer/Xcode/DerivedData/SohaPythonCoach-*/Build/Products/Debu
 
 Each row is one **Science Bowl week**. Open it to see **5 Outschool track weeks** inside (self-paced + live lessons).
 
-| Cal week | Dates | Pass | Bundled Outschool content |
-|----------|-------|------|---------------------------|
-| 1 | Jun 8–12 | Pass 1 | Level 1 · sessions 1–5 |
-| 2 | Jun 15–19 | Pass 1 | Level 1 · sessions 6–10 |
-| 3 | Jun 22–26 | Pass 1 | Level 2 · sessions 1–5 |
-| 4 | Jun 29–Jul 3 | Pass 1 | Level 2 · sessions 6–10 |
-| 5 | Jul 6–10 | Pass 2 | Level 3 · sessions 1–5 |
-| 6 | Jul 13–17 | Pass 2 | Level 3 · sessions 6–10 |
-| 7 | Jul 20–24 | Pass 2 | Level 4 · sessions 1–5 |
-| 8 | Jul 27–31 | Pass 2 | Level 4 · sessions 6–10 |
-| 9 | Aug 3–7 | Pass 3 | Portfolio · labs 1–5 |
-| 10 | Aug 10–14 | Pass 3 | Portfolio · labs 6–10 + graduation |
+| Cal week | Dates | Pass | Python label (same in calendar) |
+|----------|-------|------|----------------------------------|
+| 1 | Jun 8–12 | Pass 1 | **L1 (1–5)** |
+| 2 | Jun 15–19 | Pass 1 | **L1 (6–10)** |
+| 3 | Jun 22–26 | Pass 1 | **L2 (1–5)** |
+| 4 | Jun 29–Jul 3 | Pass 1 | **L2 (6–10)** |
+| 5 | Jul 6–10 | Pass 2 | **L3 (1–5)** |
+| 6 | Jul 13–17 | Pass 2 | **L3 (6–10)** |
+| 7 | Jul 20–24 | Pass 2 | **L4 (1–5)** |
+| 8 | Jul 27–31 | Pass 2 | **L4 (6–10)** |
+| 9 | Aug 3–7 | Pass 3 | **Portfolio (1–5)** |
+| 10 | Aug 10–14 | Pass 3 | **Portfolio (6–10)** |
 
 ## Summer schedule
 

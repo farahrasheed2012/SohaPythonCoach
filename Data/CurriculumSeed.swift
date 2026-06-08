@@ -3223,7 +3223,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
     private static let summerWeeks: [WeekUnit] = [
         bundleTrackWeeks(
             id: 1,
-            title: "Level 1 · Weeks 1–5",
+            title: "L1 (1–5)",
             subtitle: "Pass 1 · Jun 8–12 · Foundations",
             emoji: "👋",
             goal: "Python basics through your first games — print, decisions, loops, functions, and text games.",
@@ -3231,7 +3231,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         ),
         bundleTrackWeeks(
             id: 2,
-            title: "Level 1 · Weeks 6–10",
+            title: "L1 (6–10)",
             subtitle: "Pass 1 · Jun 15–19 · Building depth",
             emoji: "🎮",
             goal: "Lists, Science Bowl quiz game, pygame intro, Final Boss, Flask, and Level 1 graduation.",
@@ -3239,7 +3239,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         ),
         bundleTrackWeeks(
             id: 3,
-            title: "Level 2 · Weeks 1–5",
+            title: "L2 (1–5)",
             subtitle: "Pass 1 · Jun 22–26 · Mid-level mastery",
             emoji: "🛡️",
             goal: "Error handling, Caesar cipher, OOP, APIs, and the weather app project.",
@@ -3247,7 +3247,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         ),
         bundleTrackWeeks(
             id: 4,
-            title: "Level 2 · Weeks 6–10",
+            title: "L2 (6–10)",
             subtitle: "Pass 1 · Jun 29–Jul 3 · Round-ready",
             emoji: "📊",
             goal: "Pandas, Matplotlib, lambda, scikit-learn ML, and Level 2 graduation.",
@@ -3255,7 +3255,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         ),
         bundleTrackWeeks(
             id: 5,
-            title: "Level 3 · Weeks 1–5",
+            title: "L3 (1–5)",
             subtitle: "Pass 2 · Jul 6–10 · Foundations (again)",
             emoji: "📝",
             goal: "Tkinter text editor, Tic-Tac-Toe, cipher app, recursion, and live API data.",
@@ -3263,7 +3263,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         ),
         bundleTrackWeeks(
             id: 6,
-            title: "Level 3 · Weeks 6–10",
+            title: "L3 (6–10)",
             subtitle: "Pass 2 · Jul 13–17 · Building depth (again)",
             emoji: "💾",
             goal: "JSON persistence, pygame review, OOP integration, and Level 3 capstone.",
@@ -3271,7 +3271,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         ),
         bundleTrackWeeks(
             id: 7,
-            title: "Level 4 · Weeks 1–5",
+            title: "L4 (1–5)",
             subtitle: "Pass 2 · Jul 20–24 · Mid-level mastery (again)",
             emoji: "🧮",
             goal: "Programming paradigms, OOP adventure, functional Python, algorithms, and pathfinding.",
@@ -3279,7 +3279,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         ),
         bundleTrackWeeks(
             id: 8,
-            title: "Level 4 · Weeks 6–10",
+            title: "L4 (6–10)",
             subtitle: "Pass 2 · Jul 27–31 · Round-ready (again)",
             emoji: "🤖",
             goal: "AI/ML, Tkinter for ML, weather APIs, capstone planning, and Level 4 live graduation.",
@@ -3287,7 +3287,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         ),
         bundleTrackWeeks(
             id: 9,
-            title: "Portfolio · Weeks 1–5",
+            title: "Portfolio (1–5)",
             subtitle: "Pass 3 · Aug 3–7 · Final review (1 of 2)",
             emoji: "🔨",
             goal: "Ship calculator, adventure game, algorithm viz, pathfinding, and weather ML portfolio labs.",
@@ -3295,7 +3295,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         ),
         bundleTrackWeeks(
             id: 10,
-            title: "Portfolio · Weeks 6–10",
+            title: "Portfolio (6–10)",
             subtitle: "Pass 3 · Aug 10–14 · Final review (2 of 2)",
             emoji: "🎓",
             goal: "GUI portfolio lab, final project sprints, polish, and Level 4 graduation showcase.",

@@ -71,10 +71,11 @@ struct LessonDetailView: View {
     }
 
     private var lessonSubtitle: String {
+        let base = "Journey wk \(week.id) · \(week.title)"
         if lesson.isLiveLesson, let mins = lesson.durationMinutes {
-            return "Week \(week.id) · Live · \(mins) min"
+            return "\(base) · Live · \(mins) min"
         }
-        return "Week \(week.id)"
+        return base
     }
 
     private var headerRow: some View {

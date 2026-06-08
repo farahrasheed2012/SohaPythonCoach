@@ -23,8 +23,11 @@ struct JourneyView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Hi, \(appState.studentName)! 👋")
                     .font(.largeTitle.bold())
-                Text("\(weekCount) calendar weeks · 50 Outschool sessions · 5 games")
+                Text("\(weekCount) calendar weeks · matches summer-2026-calendar · 50 live sessions · 5 games")
                     .foregroundStyle(.secondary)
+                Text("Open the week that matches today’s calendar block (e.g. Week 1 → L1 (1–5)).")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
             }
             Spacer()
             ProgressRing(fraction: appState.progressFraction, label: "Lessons done")
