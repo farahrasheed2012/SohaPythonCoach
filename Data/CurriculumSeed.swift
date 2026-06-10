@@ -5,11 +5,11 @@ enum CurriculumSeed {
         OutcomeGoal(id: "o1", title: "Write Python independently", detail: "Open a file, run code, fix errors without step-by-step help."),
         OutcomeGoal(id: "o2", title: "Build 4–5 games", detail: "Text games first, then pygame games with graphics, sound, and scoring."),
         OutcomeGoal(id: "o3", title: "Understand core logic", detail: "Variables, if/else, loops, functions, lists, and game loops."),
-        OutcomeGoal(id: "o4", title: "Live class skills", detail: "GUI (Tkinter), data viz, web apps (Flask), and presenting your projects."),
+        OutcomeGoal(id: "o4", title: "GUI & data skills", detail: "Tkinter, data viz, web apps (Flask), and presenting your projects."),
         OutcomeGoal(id: "o5", title: "Ready for what's next", detail: "Scratch → AI tools → app development with confidence."),
-        OutcomeGoal(id: "o6", title: "Outschool Level 2", detail: "Error handling, OOP, APIs, pandas, matplotlib, and intro to machine learning."),
-        OutcomeGoal(id: "o7", title: "Outschool Level 3", detail: "Tkinter GUIs, Tic-Tac-Toe, cipher app, recursion, APIs, and a final project."),
-        OutcomeGoal(id: "o8", title: "Outschool Level 4", detail: "Paradigms, OOP, algorithms, data structures, AI/ML, APIs, and capstone planning."),
+        OutcomeGoal(id: "o6", title: "Level 2 mastery", detail: "Error handling, OOP, APIs, pandas, matplotlib, and intro to machine learning."),
+        OutcomeGoal(id: "o7", title: "Level 3 mastery", detail: "Tkinter GUIs, Tic-Tac-Toe, cipher app, recursion, APIs, and a final project."),
+        OutcomeGoal(id: "o8", title: "Level 4 mastery", detail: "Paradigms, OOP, algorithms, data structures, AI/ML, APIs, and capstone planning."),
         OutcomeGoal(id: "o9", title: "Level 4 Portfolio", detail: "Seven portfolio projects plus final capstone and graduation showcase."),
     ]
 
@@ -355,9 +355,41 @@ assert "time_left" in user_code or "timer" in user_code.lower()
 
     // `summerWeeks` is defined at the bottom after all track weeks (week1–week50).
 
-    // MARK: - Outschool live lessons (60 min each)
+    // MARK: - Project sessions (~30 min app lessons)
 
-    private static func outschoolLive(
+    static func teachingLesson(
+        id: String,
+        title: String,
+        body: String,
+        teacherScript: String,
+        starterCode: String,
+        tryItPrompt: String? = nil,
+        challengeQuestion: String? = nil,
+        challengeAnswer: String? = nil,
+        challengeAcceptedAnswers: [String]? = nil,
+        codeTests: [CodeTest]? = nil
+    ) -> LessonStep {
+        LessonStep(
+            id: id,
+            title: title,
+            body: body,
+            teacherScript: teacherScript,
+            tryItPrompt: tryItPrompt,
+            starterCode: starterCode,
+            challengeQuestion: challengeQuestion,
+            challengeAnswer: challengeAnswer,
+            challengeAcceptedAnswers: challengeAcceptedAnswers,
+            codeTests: codeTests,
+            format: .selfPaced,
+            durationMinutes: nil
+        )
+    }
+
+    private static func sessionWeek(_ teach: [LessonStep], _ session: LessonStep) -> [LessonStep] {
+        teach + [session]
+    }
+
+    private static func sessionLesson(
         week: Int,
         sessionNumber: Int,
         title: String,
@@ -369,12 +401,17 @@ assert "time_left" in user_code or "timer" in user_code.lower()
         challengeAnswer: String? = nil,
         challengeAcceptedAnswers: [String]? = nil,
         codeTests: [CodeTest]? = nil,
-        liveTitlePrefix: String = "Live Lesson"
+        sessionTitlePrefix: String = "Session"
     ) -> LessonStep {
-        LessonStep(
+        let capstoneBody = """
+**Session capstone** — complete the lessons above in this week first, then finish the project below in Playground.
+
+\(body)
+"""
+        return LessonStep(
             id: "w\(week)-live",
-            title: "\(liveTitlePrefix) \(sessionNumber): \(title)",
-            body: body,
+            title: "\(sessionTitlePrefix) \(sessionNumber): \(title)",
+            body: capstoneBody,
             teacherScript: teacherScript,
             tryItPrompt: tryItPrompt,
             starterCode: starterCode,
@@ -382,128 +419,157 @@ assert "time_left" in user_code or "timer" in user_code.lower()
             challengeAnswer: challengeAnswer,
             challengeAcceptedAnswers: challengeAcceptedAnswers,
             codeTests: codeTests,
-            format: .liveOnline,
-            durationMinutes: 60
+            format: .selfPaced,
+            durationMinutes: 30
         )
     }
 
-    private static let live1 = outschoolLive(
+    private static let live1 = sessionLesson(
         week: 1,
         sessionNumber: 1,
-        title: "Foundations of Python Programming",
+        title: "Capstone: Your About Me program",
         body: """
-Review variables, conditional statements, and functions. Apply them in a Fizz Buzz mini-project and explore nested conditionals. Finish with scope, the global keyword, and the pass statement — a solid foundation for the rest of the course.
+**Session 1 goal:** Build a short program that introduces you — using only what you learned this week (`print` and variables).
 
-60 min online live lesson with instructor.
+**Checklist before you start**
+- You completed the four lessons above (Python basics → variables → About Me → combining text).
+- You can explain what a variable is in your own words.
+
+**Your program should**
+1. Print a title line (banner).
+2. Store at least four facts in variables (name, grade, favorite subject, hobby).
+3. Print each fact on its own line.
+4. Print one closing sentence that uses at least two variables.
+
+Open Playground, start from the scaffold below, and fill in the `# TODO` parts yourself. Run often — fix one error at a time.
+
+~30 min app lesson — read, code in Playground, quick check.
 """,
-        teacherScript: "Before class: confirm Zoom/Outschool link and that python3 works. After class, have Soha run Fizz Buzz in the Playground without looking at notes.",
-        tryItPrompt: "After live class: run Fizz Buzz for numbers 1–20 in Playground.",
+        teacherScript: "Do not introduce loops or if statements today. If Soha finishes early, ask her to add favorite Science Bowl subject as a fifth variable. Mark complete when she can change a fact and re-run without help.",
+        tryItPrompt: "Add: favorite_subject = \"Science\" and print it on its own line.",
         starterCode: """
-# Fizz Buzz — print 1 to 20
-for n in range(1, 21):
-    if n % 15 == 0:
-        print("FizzBuzz")
-    elif n % 3 == 0:
-        print("Fizz")
-    elif n % 5 == 0:
-        print("Buzz")
-    else:
-        print(n)
+# Session 1 capstone — finish this About Me program
+print("=== About Me ===")
+
+name = "Soha"
+grade = 7
+favorite_subject = "Science"
+hobby = "Science Bowl"
+
+print("Name:", name)
+print("Grade:", grade)
+# TODO: print favorite_subject and hobby
+# TODO: one closing line, e.g. print(name, "loves", hobby)
 """,
-        challengeQuestion: "In Fizz Buzz, what do you print when n is divisible by both 3 and 5?",
-        challengeAnswer: "FizzBuzz",
-        challengeAcceptedAnswers: ["fizzbuzz"]
+        challengeQuestion: "What function shows text on the screen?",
+        challengeAnswer: "print",
+        challengeAcceptedAnswers: ["print()"],
+        codeTests: [
+            CodeTest(
+                id: "w1-live-about",
+                label: "Defines at least 3 variables and uses print",
+                assertionScript: """
+assert user_code.count("print") >= 4
+assert "name" in user_code
+assert "grade" in user_code
+""",
+                inspectSourceOnly: true
+            ),
+        ]
     )
 
-    private static let live2 = outschoolLive(
+    private static let live2 = sessionLesson(
         week: 2,
         sessionNumber: 2,
-        title: "Planning and Project Development",
+        title: "Capstone: Pizza Shop planner",
         body: """
-Learn why planning matters in coding. Use flowcharts and brainstorming to break problems down. Main project: Outschool Pizza Shop — a multi-day build that reinforces variables, input, and conditionals in a practical context.
+**Session 2 goal:** Build a text Pizza Shop that uses **input**, **if**, a **menu dict**, an **order list**, and a **while** loop.
 
-60 min online live lesson with instructor.
+Complete lessons w2-l1 through w2-l5 first.
+
+**Steps**
+1. Sketch a flowchart on paper (order loop → pick pizza → done → total).
+2. Fill in the `# TODO` parts in Playground.
+3. Test: one valid pizza, one invalid pizza, then done.
+
+~30 min app lesson — read, code in Playground, quick check.
 """,
-        teacherScript: "Ask Soha to explain her Pizza Shop plan in her own words before coding. Save the flowchart photo in week notes.",
+        teacherScript: "Ask Soha to explain her Pizza Shop plan before coding. Save the flowchart photo in week notes.",
         tryItPrompt: "Sketch a flowchart on paper before opening Playground.",
         starterCode: """
-# Pizza Shop order taker
+# Pizza Shop — finish the TODOs
 menu = {"cheese": 8, "pepperoni": 10, "veggie": 9}
 order = []
 
 print("Welcome to Soha's Pizza!")
 while True:
     choice = input("Pick (cheese/pepperoni/veggie/done): ").lower()
-    if choice == "done":
-        break
-    if choice in menu:
-        order.append(choice)
-        print("Added", choice)
-    else:
-        print("Not on menu.")
+    # TODO: if choice is "done", break
+    # TODO: if choice in menu, append to order and print "Added ..."
+    # TODO: else print "Not on menu."
 
-total = sum(menu[pizza] for pizza in order)
+# TODO: compute total with sum(menu[pizza] for pizza in order)
 print("Order:", order)
-print("Total: $", total)
+# print("Total: $", total)
 """,
         challengeQuestion: "What planning tool helps break a big project into steps?",
         challengeAnswer: "flowchart",
         challengeAcceptedAnswers: ["brainstorm", "brainstorming"]
     )
 
-    private static let live3 = outschoolLive(
+    private static let live3 = sessionLesson(
         week: 3,
         sessionNumber: 3,
-        title: "Advanced Python Concepts",
+        title: "Capstone: Clean strings & letter grades",
         body: """
-Explore Python methods — string and math methods. Learn ternary operators for concise conditionals. Study Python keywords and reserved words to write cleaner, more readable code.
+**Session 3 goal:** Practice string methods and ternary conditionals — after Fizz Buzz in w3-l4.
 
-60 min online live lesson with instructor.
+Complete w3-l1 through w3-l4 first.
+
+**Your program should**
+1. Clean a messy name with `.strip()` and `.title()`.
+2. Use a ternary to assign a letter grade from a numeric score.
+3. Print both results.
+
+~30 min app lesson — read, code in Playground, quick check.
 """,
         teacherScript: "Have Soha predict what .strip() and .title() do before running. Compare if/else vs ternary for the same problem.",
         starterCode: """
+# Session 3 capstone — finish the TODOs
 name = "  soha  "
-print("Clean name:", name.strip().title())
-print("Absolute value:", abs(-7))
+# TODO: print cleaned name with strip() and title()
 
 grade = 85
-letter = "A" if grade >= 90 else "B" if grade >= 80 else "C"
-print("Grade:", letter)
+# TODO: letter = "A" if grade >= 90 else "B" if grade >= 80 else "C"
+# TODO: print grade and letter
 
-# Reserved words — you cannot use these as variable names:
-# if, else, def, class, import, return, ...
+# Reserved words — never use as variable names: if, else, def, class, ...
 """,
         challengeQuestion: "What does the ternary operator let you write in one line?",
         challengeAnswer: "if else",
         challengeAcceptedAnswers: ["conditional", "if/else"]
     )
 
-    private static let live4 = outschoolLive(
+    private static let live4 = sessionLesson(
         week: 4,
         sessionNumber: 4,
-        title: "File Operations and Loops",
+        title: "Capstone: Notes file + loop review",
         body: """
-Read from, write to, and append to files. Create your own files and manipulate data inside them. Comprehensive loop review with a focus on while loops for repetitive tasks and data processing.
+**Session 4 goal:** Write, append, and read a notes file, then review a `while` loop.
 
-60 min online live lesson with instructor.
+Complete w4-l1–l4 first. Files save to the Playground scripts folder when you run in Terminal, or use a filename in the current directory.
+
+~30 min app lesson — read, code in Playground, quick check.
 """,
-        teacherScript: "After class, open the saved file in TextEdit together so Soha sees the file on disk matches her code.",
+        teacherScript: "When done, open the saved file in TextEdit together so Soha sees the file on disk matches her code.",
         tryItPrompt: "Find notes.txt in Application Support scripts folder after saving.",
         starterCode: """
 filename = "notes.txt"
 
-with open(filename, "w") as f:
-    f.write("Hello from Soha!\\n")
+# TODO: write one line with open(..., "w")
+# TODO: append another line with open(..., "a")
+# TODO: read and print the full file
 
-with open(filename, "a") as f:
-    f.write("Python files are just text.\\n")
-
-with open(filename) as f:
-    content = f.read()
-    print("File contents:")
-    print(content)
-
-# while loop review
 count = 0
 while count < 3:
     print("Loop round", count + 1)
@@ -514,59 +580,75 @@ while count < 3:
         challengeAcceptedAnswers: ["a", "a mode"]
     )
 
-    private static let live5 = outschoolLive(
+    private static let live5 = sessionLesson(
         week: 5,
         sessionNumber: 5,
-        title: "Data Structures and Advanced Function Concepts",
+        title: "Capstone: Points & flexible functions",
         body: """
-Introduce tuples as a data structure. Learn function default parameters, return statements, and variable arguments (*args) for flexible, powerful functions.
+**Session 5 goal:** Combine **tuples**, **default parameters**, and **\\*args** in one small program.
 
-60 min online live lesson with instructor.
+Complete w5-l1 through w5-l5 first.
+
+**Your program should**
+1. Store a 2D point as a tuple and print x/y.
+2. Write `greet(name, greeting="Hello")` with a default greeting.
+3. Write `total(*numbers)` that returns the sum of any number of arguments.
+4. Call each function at least once and print the results.
+
+~30 min app lesson — read, code in Playground, quick check.
 """,
         teacherScript: "Compare list vs tuple — why might coordinates be a tuple? Demo *args with different numbers of arguments.",
         starterCode: """
-# Tuples — ordered, cannot change items
+# Session 5 capstone — finish the TODOs
+
 point = (3, 4)
-print("x:", point[0], "y:", point[1])
+# TODO: print x and y from point[0] and point[1]
 
 def greet(name, greeting="Hello"):
-    print(greeting + ",", name)
+    # TODO: print greeting + "," + name
 
 greet("Soha")
 greet("Soha", "Hi")
 
 def total(*numbers):
-    return sum(numbers)
+    # TODO: return sum(numbers)
 
-print("Sum:", total(1, 2, 3, 4))
-print("Sum:", total(10, 20))
+# TODO: print total(1, 2, 3) and total(10, 20)
 """,
         challengeQuestion: "What symbol collects extra arguments into a tuple?",
         challengeAnswer: "*args",
         challengeAcceptedAnswers: ["star args", "asterisk"]
     )
 
-    private static let live6 = outschoolLive(
+    private static let live6 = sessionLesson(
         week: 6,
         sessionNumber: 6,
-        title: "Graphical User Interfaces with Python",
+        title: "Capstone: Interactive calendar GUI",
         body: """
-GUI development with Tkinter: windows, buttons, labels, and events. Main project: Outschool Interactive Calendar Application — apply GUI skills in a practical, engaging build.
+**Session 6 goal:** Build a simple Tkinter calendar window with labels and buttons.
 
-60 min online live lesson with instructor.
+Complete w6-l1 through w6-l4 first. Run with **Open in Terminal** — `mainloop()` needs a window.
+
+**Your window should**
+1. Show a title and month label.
+2. Have a **Today** button that prints a message.
+3. Have a **Quit** button that closes the window.
+
+~30 min app lesson — read, code in Playground, quick check.
 """,
         teacherScript: "Tkinter runs in a window — use Run game window or Terminal like pygame. Celebrate the first button click!",
-        tryItPrompt: "Add a second button that prints today's date.",
+        tryItPrompt: "Add a second label showing today's date.",
         starterCode: """
+# Session 6 capstone — finish the TODOs
 import tkinter as tk
 
 root = tk.Tk()
 root.title("Soha Calendar")
 root.geometry("300x200")
 
-tk.Label(root, text="March 2026", font=("Arial", 16)).pack(pady=10)
-tk.Button(root, text="Today", command=lambda: print("Today clicked!")).pack(pady=5)
-tk.Button(root, text="Quit", command=root.destroy).pack(pady=5)
+# TODO: Label with month/year, e.g. "March 2026"
+# TODO: Button "Today" → command prints "Today clicked!"
+# TODO: Button "Quit" → command=root.destroy
 
 root.mainloop()
 """,
@@ -575,78 +657,100 @@ root.mainloop()
         challengeAcceptedAnswers: ["Tkinter"]
     )
 
-    private static let live7 = outschoolLive(
+    private static let live7 = sessionLesson(
         week: 7,
         sessionNumber: 7,
-        title: "Introduction to Data Science with Python",
+        title: "Capstone: Quiz score chart",
         body: """
-Introduction to data science: graphing with NumPy and Matplotlib. Build a Python Graph Application to analyze and visualize real-world data.
+**Session 7 goal:** Plot quiz scores over time with matplotlib.
 
-60 min online live lesson with instructor.
+Complete w7-l1 through w7-l4 first. Install once: `pip3 install matplotlib`
+
+**Your chart should**
+1. Use two lists: days and scores.
+2. Call `plt.plot` with a marker.
+3. Set title, x-label, y-label, and y-limit 0–100.
+4. Call `plt.show()` (Terminal / Open in Terminal).
+
+~30 min app lesson — read, code in Playground, quick check.
 """,
-        teacherScript: "Before class: pip3 install matplotlib numpy. Connect graphs to Science Bowl — plot practice quiz scores over time.",
+        teacherScript: "Connect graphs to Science Bowl — plot practice quiz scores over time.",
         tryItPrompt: "pip3 install matplotlib numpy",
         starterCode: """
-# pip3 install matplotlib numpy
+# Session 7 capstone — finish the TODOs
+# pip3 install matplotlib
 import matplotlib.pyplot as plt
 
 quiz_scores = [70, 85, 90, 88, 92]
 days = [1, 2, 3, 4, 5]
 
-plt.plot(days, quiz_scores, marker="o")
-plt.title("Science Quiz Scores")
-plt.xlabel("Week")
-plt.ylabel("Score")
-plt.ylim(0, 100)
-plt.show()
+# TODO: plt.plot(days, quiz_scores, marker="o")
+# TODO: plt.title, plt.xlabel, plt.ylabel
+# TODO: plt.ylim(0, 100)
+# TODO: plt.show()
 """,
         challengeQuestion: "Which library draws graphs in this lesson?",
         challengeAnswer: "matplotlib",
         challengeAcceptedAnswers: ["pyplot"]
     )
 
-    private static let live8 = outschoolLive(
+    private static let live8 = sessionLesson(
         week: 8,
         sessionNumber: 8,
-        title: "Game Development with PyGame Zero",
+        title: "Capstone: Space Explorer plan",
         body: """
-Game development with PyGame Zero: game loops, sprites, and event handling. Documentation matters! Apply concepts in a Space Explorer Game — simple but engaging.
+**Session 8 goal:** Plan a small game before coding — then connect it to your Coin Collector work in w8-l2/l3.
 
-60 min online live lesson with instructor.
+Complete w8-l1 through w8-l3 first (Final Boss tab).
+
+**Your plan should list**
+1. Game loop (update every frame).
+2. Player sprite + movement.
+3. Enemy or obstacle sprites + collision.
+4. Score and game-over screen.
+5. Where you'll read docs (pygame.org or pgzero).
+
+~30 min app lesson — read, code in Playground, quick check.
 """,
         teacherScript: "Link to Coin Collector Final Boss — same ideas: loop, sprites, events. Compare pygame vs pgzero syntax after class.",
-        tryItPrompt: "After live class, add one sprite to your Coin Collector game.",
+        tryItPrompt: "Add one sprite to your Coin Collector game in the Final Boss tab.",
         starterCode: """
-# Space Explorer — plan before coding
-# pip3 install pgzero   OR continue with pygame from Final Boss
-
+# Session 8 capstone — write your Space Explorer plan
 print("=== Space Explorer Plan ===")
-print("1. Game loop (update every frame)")
-print("2. Player ship sprite + movement")
-print("3. Asteroid sprites + collision")
-print("4. Score + game over screen")
-print("5. Read docs: pygame.org or pgzero.readthedocs.io")
+# TODO: print 5 numbered steps (loop, player, obstacles, score, docs)
+print()
+print("Coin Collector status:")
+print("[ ] Player moves")
+print("[ ] 3 coins collected")
+print("[ ] Timer works")
 """,
         challengeQuestion: "Name two things every game loop needs to handle.",
         challengeAnswer: "events update",
         challengeAcceptedAnswers: ["events and update", "input and draw", "sprites events"]
     )
 
-    private static let live9 = outschoolLive(
+    private static let live9 = sessionLesson(
         week: 9,
         sessionNumber: 9,
-        title: "Web Development with Python Flask",
+        title: "Capstone: Todo List web app",
         body: """
-Web development with Flask: set up a server, handle routes, and work with HTML templates. Begin the Todo List Application — form handling and basic data storage.
+**Session 9 goal:** Build a Flask Todo app that shows tasks and adds new ones from a form.
 
-60 min online live lesson with instructor.
+Complete w9-l1 and w9-l2 first. Save as `todo_app.py` and run in Terminal — not the in-app Run button.
+
+**Your app should**
+1. Show a heading and list of tasks at `/`.
+2. Include a form with `<input name="task">` and Add button.
+3. POST to `/add` to append a task and redirect home.
+
+~30 min app lesson — read, code in Playground, quick check.
 """,
-        teacherScript: "Flask runs in Terminal, not the in-app Playground. After class, bookmark localhost page together.",
+        teacherScript: "Flask runs in Terminal, not the in-app Playground. When done, bookmark localhost page together.",
         tryItPrompt: "pip3 install flask — then save and run in Terminal.",
         starterCode: """
+# Session 9 capstone — finish the TODOs
 # pip3 install flask
-# Save as todo_app.py and run: python3 todo_app.py
-# Open http://127.0.0.1:5000 in Safari
+# Save as todo_app.py → python3 todo_app.py → Safari http://127.0.0.1:5000
 
 from flask import Flask, request, redirect
 
@@ -655,15 +759,12 @@ todos = []
 
 @app.route("/")
 def home():
-    items = "".join(f"<li>{t}</li>" for t in todos)
-    form = '<form action="/add" method="post"><input name="task"><button>Add</button></form>'
-    return f"<h1>Soha Todo List</h1><ul>{items}</ul>{form}"
+    # TODO: build HTML with <h1>, <ul> of tasks, and a POST form
+    return "<h1>Soha Todo List</h1><p>TODO: list + form</p>"
 
 @app.route("/add", methods=["POST"])
 def add():
-    task = request.form.get("task", "").strip()
-    if task:
-        todos.append(task)
+    # TODO: get task from request.form, strip, append if not empty, redirect("/")
     return redirect("/")
 
 if __name__ == "__main__":
@@ -674,14 +775,14 @@ if __name__ == "__main__":
         challengeAcceptedAnswers: ["localhost:5000", "localhost"]
     )
 
-    private static let live10 = outschoolLive(
+    private static let live10 = sessionLesson(
         week: 10,
         sessionNumber: 10,
         title: "Project Completion and Student Presentations",
         body: """
-Complete the Todo List Application — final features and basic styling. Present your final project: demo what you learned across all 10 live lessons and get feedback.
+Complete the Todo List Application — final features and basic styling. Present your final project: demo what you learned across all 10 sessions and get feedback.
 
-60 min online live lesson with instructor.
+~30 min app lesson — read, code in Playground, quick check.
 """,
         teacherScript: "Practice the 2-minute demo at home first. Progress tab → export backup before presentation day.",
         tryItPrompt: "Rehearse: 30 sec intro · 60 sec demo · 30 sec what you learned.",
@@ -698,12 +799,12 @@ print("- Fizz Buzz & functions")
 print("- Pizza Shop planning")
 print("- Files, GUIs, graphs, games, Flask")
 """,
-        challengeQuestion: "How long should your live demo be?",
+        challengeQuestion: "How long should your project demo be?",
         challengeAnswer: "2 minutes",
         challengeAcceptedAnswers: ["two minutes", "2 min"]
     )
 
-    // MARK: - Outschool Level 2 live lessons (weeks 11–20)
+    // MARK: - Level 2 sessions (weeks 11–20)
 
     private static func advancedLive(
         week: Int,
@@ -718,11 +819,11 @@ print("- Files, GUIs, graphs, games, Flask")
         challengeAcceptedAnswers: [String]? = nil,
         codeTests: [CodeTest]? = nil
     ) -> LessonStep {
-        outschoolLive(
+        sessionLesson(
             week: week,
             sessionNumber: sessionNumber,
             title: title,
-            body: body + "\n\n**Outschool Level 2** · 60 min online live lesson.",
+            body: body + "\n\n**Level 2** · ~30 min app lesson.",
             teacherScript: teacherScript,
             tryItPrompt: tryItPrompt,
             starterCode: starterCode,
@@ -730,7 +831,7 @@ print("- Files, GUIs, graphs, games, Flask")
             challengeAnswer: challengeAnswer,
             challengeAcceptedAnswers: challengeAcceptedAnswers,
             codeTests: codeTests,
-            liveTitlePrefix: "Advanced Live"
+            sessionTitlePrefix: "Level 2 Session"
         )
     }
 
@@ -742,18 +843,7 @@ print("- Files, GUIs, graphs, games, Flask")
 Refresh the core building blocks before advanced topics: if/elif/else, def functions with parameters and return, while and for loops. Apply all three in short review exercises so Course 2 starts on solid ground.
 """,
         teacherScript: "Quick oral quiz: write a function that uses a loop and an if statement. Don't peek at old notes for 5 minutes first.",
-        starterCode: """
-def grade_label(score):
-    if score >= 90:
-        return "A"
-    elif score >= 80:
-        return "B"
-    return "C"
-
-scores = [95, 82, 74, 88]
-for s in scores:
-    print(s, "→", grade_label(s))
-""",
+        starterCode: SessionScaffolds.week11,
         challengeQuestion: "Name the three control-flow tools reviewed today.",
         challengeAnswer: "conditionals functions loops",
         challengeAcceptedAnswers: ["if else def while for"]
@@ -768,32 +858,7 @@ Learn try/except, try/except/else, and try/except/finally. Handle crashes gracef
 """,
         teacherScript: "Trigger a ValueError on purpose so Soha sees the difference with and without try/except. Explain Caesar cipher history in one sentence.",
         tryItPrompt: "Encode your first name with shift 3.",
-        starterCode: """
-# Error handling
-try:
-    age = int(input("Enter age: "))
-    print("Next year you will be", age + 1)
-except ValueError:
-    print("That was not a valid number.")
-else:
-    print("Input was valid!")
-finally:
-    print("Done asking.")
-
-# Caesar Cipher — shift each letter
-def encrypt(text, shift):
-    result = ""
-    for char in text:
-        if char.isalpha():
-            base = ord("A") if char.isupper() else ord("a")
-            result += chr((ord(char) - base + shift) % 26 + base)
-        else:
-            result += char
-    return result
-
-message = "HELLO SOHA"
-print("Encrypted:", encrypt(message, 3))
-""",
+        starterCode: SessionScaffolds.week12,
         challengeQuestion: "Which keyword runs cleanup code even when an error happens?",
         challengeAnswer: "finally",
         challengeAcceptedAnswers: ["finally block"]
@@ -808,26 +873,7 @@ Complete the Caesar Cipher project (encrypt and decrypt). Introduction to object
 """,
         teacherScript: "Decrypt should use shift (26 - n) or negative shift. Draw a class diagram: Student has name, grade, methods enroll() and greet().",
         tryItPrompt: "Add a decrypt() function to your cipher.",
-        starterCode: """
-class Student:
-    def __init__(self, name, grade):
-        self.name = name
-        self.grade = grade
-        self.courses = []
-
-    def enroll(self, course):
-        self.courses.append(course)
-        print(self.name, "enrolled in", course)
-
-    def greet(self):
-        return f"Hi, I'm {self.name}, grade {self.grade}."
-
-soha = Student("Soha", 7)
-soha.enroll("Python")
-soha.enroll("Science Bowl")
-print(soha.greet())
-print("Courses:", soha.courses)
-""",
+        starterCode: SessionScaffolds.week13,
         challengeQuestion: "What method runs automatically when you create a class instance?",
         challengeAnswer: "__init__",
         challengeAcceptedAnswers: ["init", "constructor"]
@@ -842,27 +888,7 @@ What APIs are and how apps fetch live data. APIs and data sources (weather, JSON
 """,
         teacherScript: "Show a JSON weather response in the browser. Tkinter + requests run in Terminal. Get a free API key from openweathermap.org if needed.",
         tryItPrompt: "pip3 install requests · sketch the weather app window on paper.",
-        starterCode: """
-# pip3 install requests
-import tkinter as tk
-
-root = tk.Tk()
-root.title("Weather App")
-root.geometry("320x180")
-
-city_var = tk.StringVar(value="Houston")
-tk.Label(root, text="City:").pack(pady=5)
-tk.Entry(root, textvariable=city_var).pack()
-result = tk.Label(root, text="Weather data will appear here", wraplength=280)
-result.pack(pady=10)
-
-def fetch_weather():
-    city = city_var.get()
-    result.config(text=f"Fetching weather for {city}...\\n(Add API key in live class)")
-
-tk.Button(root, text="Get Weather", command=fetch_weather).pack()
-root.mainloop()
-""",
+        starterCode: SessionScaffolds.week14,
         challengeQuestion: "What format do most APIs return data in?",
         challengeAnswer: "JSON",
         challengeAcceptedAnswers: ["json"]
@@ -877,22 +903,7 @@ Build the Real-Time Weather Application: connect to a weather API, parse JSON, d
 """,
         teacherScript: "Test with a fake city name before demo day. Celebrate the first real temperature on screen!",
         tryItPrompt: "Add humidity or wind speed to the display.",
-        starterCode: """
-# weather_app.py — run in Terminal after pip3 install requests
-# Replace YOUR_API_KEY and run: python3 weather_app.py
-
-import requests
-
-API_KEY = "YOUR_API_KEY"
-city = "Houston"
-url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={API_KEY}&units=imperial"
-
-response = requests.get(url)
-data = response.json()
-temp = data["main"]["temp"]
-desc = data["weather"][0]["description"]
-print(f"{city}: {temp}°F, {desc}")
-""",
+        starterCode: SessionScaffolds.week15,
         challengeQuestion: "What HTTP method does requests.get use?",
         challengeAnswer: "GET",
         challengeAcceptedAnswers: ["get"]
@@ -907,29 +918,7 @@ Lists deep dive and list comprehensions for concise code. Working with Data Part
 """,
         teacherScript: "Compare a for-loop that builds a list vs a list comprehension side by side. Load a CSV of quiz scores from Science Bowl practice.",
         tryItPrompt: "pip3 install pandas numpy",
-        starterCode: """
-# pip3 install pandas numpy
-import pandas as pd
-
-# List comprehension
-squares = [n * n for n in range(1, 6)]
-print("Squares:", squares)
-
-# Pandas DataFrame
-data = {
-    "student": ["Soha", "Ali", "Maya"],
-    "score": [92, 88, 95],
-    "subject": ["Python", "Python", "Python"],
-}
-df = pd.DataFrame(data)
-print(df)
-print("Average score:", df["score"].mean())
-
-# Save and reload CSV
-df.to_csv("scores.csv", index=False)
-loaded = pd.read_csv("scores.csv")
-print(loaded)
-""",
+        starterCode: SessionScaffolds.week16,
         challengeQuestion: "What library reads CSV files into a DataFrame?",
         challengeAnswer: "pandas",
         challengeAcceptedAnswers: ["pd", "Pandas"]
@@ -944,24 +933,7 @@ Introduction to Matplotlib for charts and graphs. Python Pandas exercises for da
 """,
         teacherScript: "Plot Soha's weekly quiz scores from the CSV. Ask: what story does the graph tell?",
         tryItPrompt: "Change the graph to a bar chart instead of a line.",
-        starterCode: """
-# pip3 install matplotlib pandas
-import matplotlib.pyplot as plt
-import pandas as pd
-
-weeks = [1, 2, 3, 4, 5]
-scores = [70, 85, 90, 88, 92]
-
-plt.plot(weeks, scores, marker="o", color="purple")
-plt.title("Python Quiz Scores")
-plt.xlabel("Week")
-plt.ylabel("Score")
-plt.ylim(0, 100)
-plt.grid(True, alpha=0.3)
-plt.show()
-
-print("Data science = ask questions → collect data → visualize → decide")
-""",
+        starterCode: SessionScaffolds.week17,
         challengeQuestion: "What is the first step in a data science workflow?",
         challengeAnswer: "ask questions",
         challengeAcceptedAnswers: ["question", "define the question", "collect data"]
@@ -975,32 +947,7 @@ print("Data science = ask questions → collect data → visualize → decide")
 Lambda functions for short anonymous functions. Python default parameters review. *args and **kwargs for flexible functions. Introduction to machine learning concepts. Planning code projects before you build.
 """,
         teacherScript: "Rewrite a simple def as a lambda. Explain ML as 'find patterns in data' — connect to music prediction next week.",
-        starterCode: """
-# Lambda
-double = lambda x: x * 2
-print(double(7))
-
-# Default parameters
-def greet(name, greeting="Hello"):
-    print(f"{greeting}, {name}!")
-
-greet("Soha")
-greet("Soha", "Hi")
-
-# *args and **kwargs
-def summarize(*args, **kwargs):
-    print("Numbers:", args, "sum =", sum(args))
-    print("Extra info:", kwargs)
-
-summarize(10, 20, 30, topic="Python", week=18)
-
-# ML planning
-print("=== Music Prediction Plan ===")
-print("1. Collect song features (tempo, energy)")
-print("2. Label genres")
-print("3. Train a model")
-print("4. Predict genre of new songs")
-""",
+        starterCode: SessionScaffolds.week18,
         challengeQuestion: "What collects keyword arguments into a dictionary?",
         challengeAnswer: "**kwargs",
         challengeAcceptedAnswers: ["kwargs", "double star kwargs"]
@@ -1013,23 +960,9 @@ print("4. Predict genre of new songs")
         body: """
 Scikit-learn and Python for machine learning. Machine Learning Project — Music Prediction: train a model on song features. Student project presentations — first practice run of your demo.
 """,
-        teacherScript: "Before class: pip3 install scikit-learn. Keep the model simple — DecisionTree or KNeighbors. Rehearse 90-second demo.",
+        teacherScript: "Before starting: pip3 install scikit-learn. Keep the model simple — DecisionTree or KNeighbors. Rehearse 90-second demo.",
         tryItPrompt: "pip3 install scikit-learn",
-        starterCode: """
-# pip3 install scikit-learn
-from sklearn.tree import DecisionTreeClassifier
-
-# Simple music-style features: [tempo, energy] → genre (0=pop, 1=rock)
-X = [[120, 0.8], [140, 0.9], [90, 0.5], [100, 0.6], [150, 0.95], [85, 0.4]]
-y =   [0,       1,       0,       0,       1,       0]
-
-model = DecisionTreeClassifier(max_depth=2)
-model.fit(X, y)
-
-new_song = [[130, 0.85]]
-prediction = model.predict(new_song)
-print("Predicted genre:", "rock" if prediction[0] == 1 else "pop")
-""",
+        starterCode: SessionScaffolds.week19,
         challengeQuestion: "What sklearn method trains the model on data?",
         challengeAnswer: "fit",
         challengeAcceptedAnswers: [".fit()", "model.fit"]
@@ -1040,9 +973,9 @@ print("Predicted genre:", "rock" if prediction[0] == 1 else "pop")
         sessionNumber: 10,
         title: "Student Project Presentations",
         body: """
-Final class: present your data-science or ML student project to the class. Demonstrate what you built, explain one thing you learned, and give feedback to peers. Celebrate completing both Python courses!
+Present your data-science or ML project: demonstrate what you built, explain one thing you learned, and note one improvement for next time. Celebrate completing Level 2!
 """,
-        teacherScript: "2-minute demo max. Backup: screen recording if live demo fails. Export progress JSON before class.",
+        teacherScript: "2-minute demo max. Backup: screen recording if demo fails. Export progress JSON before presenting.",
         tryItPrompt: "Rehearse: intro · demo · one challenge you overcame · thank you.",
         starterCode: """
 print("=== Course 2 Presentation Checklist ===")
@@ -1059,12 +992,12 @@ print("· Pandas, NumPy, Matplotlib")
 print("· Lambda, *args, **kwargs")
 print("· Scikit-learn ML")
 """,
-        challengeQuestion: "How many advanced live lessons did you complete?",
+        challengeQuestion: "How many Level 2 sessions did you complete?",
         challengeAnswer: "10",
         challengeAcceptedAnswers: ["ten"]
     )
 
-    // MARK: - Outschool Level 3 live lessons (weeks 21–30)
+    // MARK: - Level 3 sessions (weeks 21–30)
 
     private static func level3Live(
         week: Int,
@@ -1079,11 +1012,11 @@ print("· Scikit-learn ML")
         challengeAcceptedAnswers: [String]? = nil,
         codeTests: [CodeTest]? = nil
     ) -> LessonStep {
-        outschoolLive(
+        sessionLesson(
             week: week,
             sessionNumber: sessionNumber,
             title: title,
-            body: body + "\n\n**Outschool Level 3** · David Sofield · 60 min online live lesson.",
+            body: body + "\n\n**Level 3** · ~30 min app lesson.",
             teacherScript: teacherScript,
             tryItPrompt: tryItPrompt,
             starterCode: starterCode,
@@ -1091,7 +1024,7 @@ print("· Scikit-learn ML")
             challengeAnswer: challengeAnswer,
             challengeAcceptedAnswers: challengeAcceptedAnswers,
             codeTests: codeTests,
-            liveTitlePrefix: "Level 3 Live"
+            sessionTitlePrefix: "Level 3 Session"
         )
     }
 
@@ -1103,33 +1036,7 @@ print("· Scikit-learn ML")
 Learn to build graphical apps with Tkinter: windows, labels, buttons, and text widgets. Start a text editor project and practice reading and writing files so your work persists between sessions.
 """,
         teacherScript: "Show Label, Button, Text, and filedialog. Save/load a .txt file. Compare GUI vs Terminal-only apps.",
-        starterCode: """
-import tkinter as tk
-from tkinter import filedialog
-
-root = tk.Tk()
-root.title("Soha's Text Editor")
-
-text = tk.Text(root, width=60, height=20)
-text.pack(padx=10, pady=10)
-
-def save_file():
-    path = filedialog.asksaveasfilename(defaultextension=".txt")
-    if path:
-        with open(path, "w") as f:
-            f.write(text.get("1.0", tk.END))
-
-def open_file():
-    path = filedialog.askopenfilename()
-    if path:
-        with open(path) as f:
-            text.delete("1.0", tk.END)
-            text.insert("1.0", f.read())
-
-tk.Button(root, text="Open", command=open_file).pack(side="left", padx=5)
-tk.Button(root, text="Save", command=save_file).pack(side="left", padx=5)
-root.mainloop()
-""",
+        starterCode: SessionScaffolds.week21,
         challengeQuestion: "Which library creates GUI windows in Python?",
         challengeAnswer: "tkinter",
         challengeAcceptedAnswers: ["Tkinter"]
@@ -1143,43 +1050,7 @@ root.mainloop()
 Build a playable Tic-Tac-Toe game with Tkinter buttons. Track board state, detect wins and draws, and reset the game. Save widget state to JSON for a polished project.
 """,
         teacherScript: "Use a 3×3 grid of buttons. Alternate X and O. Check rows, columns, diagonals after each move.",
-        starterCode: """
-import tkinter as tk
-
-board = [""] * 9
-current = "X"
-
-def check_winner():
-    wins = [(0,1,2),(3,4,5),(6,7,8),(0,3,6),(1,4,7),(2,5,8),(0,4,8),(2,4,6)]
-    for a,b,c in wins:
-        if board[a] and board[a] == board[b] == board[c]:
-            return board[a]
-    return None
-
-def click(i):
-    global current
-    if board[i] or check_winner():
-        return
-    board[i] = current
-    buttons[i].config(text=current)
-    if check_winner():
-        status.config(text=f"{current} wins!")
-    elif all(board):
-        status.config(text="Draw!")
-    else:
-        current = "O" if current == "X" else "X"
-
-root = tk.Tk()
-root.title("Tic-Tac-Toe")
-status = tk.Label(root, text="X's turn")
-status.grid(row=3, column=0, columnspan=3)
-buttons = []
-for i in range(9):
-    btn = tk.Button(root, text="", width=5, height=2, command=lambda i=i: click(i))
-    btn.grid(row=i//3, column=i%3)
-    buttons.append(btn)
-root.mainloop()
-""",
+        starterCode: SessionScaffolds.week22,
         challengeQuestion: "How many squares are on a Tic-Tac-Toe board?",
         challengeAnswer: "9",
         challengeAcceptedAnswers: ["nine"]
@@ -1193,40 +1064,7 @@ root.mainloop()
 Combine Tkinter with encryption from Level 2. Build a cipher app with input fields, encode/decode buttons, and clear error messages when input is invalid.
 """,
         teacherScript: "Reuse Caesar shift from Level 2. Add a Tkinter Entry and result Label. Handle empty input gracefully.",
-        starterCode: """
-import tkinter as tk
-
-def encrypt(text, shift):
-    result = ""
-    for char in text:
-        if char.isalpha():
-            base = ord("A") if char.isupper() else ord("a")
-            result += chr((ord(char) - base + shift) % 26 + base)
-        else:
-            result += char
-    return result
-
-def run_encrypt():
-    try:
-        shift = int(shift_entry.get())
-        output.config(text=encrypt(message.get(), shift))
-    except ValueError:
-        output.config(text="Enter a valid shift number.")
-
-root = tk.Tk()
-root.title("Cipher App")
-tk.Label(root, text="Message:").pack()
-message = tk.Entry(root, width=40)
-message.pack()
-tk.Label(root, text="Shift:").pack()
-shift_entry = tk.Entry(root, width=5)
-shift_entry.insert(0, "3")
-shift_entry.pack()
-tk.Button(root, text="Encrypt", command=run_encrypt).pack(pady=5)
-output = tk.Label(root, text="")
-output.pack()
-root.mainloop()
-""",
+        starterCode: SessionScaffolds.week23,
         challengeQuestion: "What Level 2 project does the cipher app extend?",
         challengeAnswer: "Caesar cipher",
         challengeAcceptedAnswers: ["caesar", "cipher"]
@@ -1240,25 +1078,7 @@ root.mainloop()
 Use the os module to create folders and move files by extension. Write a recursive function that organizes nested directories — a powerful pattern for real-world automation.
 """,
         teacherScript: "Demo os.listdir, os.path.isfile, os.makedirs, shutil.move. Explain base case vs recursive case.",
-        starterCode: """
-import os
-
-def organize_folder(path):
-    for name in os.listdir(path):
-        full = os.path.join(path, name)
-        if os.path.isfile(full):
-            ext = name.split(".")[-1] if "." in name else "other"
-            target_dir = os.path.join(path, ext)
-            os.makedirs(target_dir, exist_ok=True)
-            print(f"Would move {name} → {ext}/")
-        elif os.path.isdir(full) and name not in (".", ".."):
-            print(f"Entering {name}/")
-            organize_folder(full)
-
-# Test on a sample folder path (change for your machine)
-print("Organizer ready — run on a test folder with teacher supervision.")
-organize_folder(".")
-""",
+        starterCode: SessionScaffolds.week24,
         challengeQuestion: "What stops a recursive function from running forever?",
         challengeAnswer: "base case",
         challengeAcceptedAnswers: ["termination condition", "base condition"]
@@ -1272,19 +1092,7 @@ organize_folder(".")
 Fetch live data from a web API and display results in your app. Review requests, JSON parsing, and how GUI apps can show real-world information.
 """,
         teacherScript: "Use a free API (weather or quotes). Show status codes and try/except for network errors.",
-        starterCode: """
-import json
-import urllib.request
-
-url = "https://api.open-meteo.com/v1/forecast?latitude=40.7&longitude=-74.0&current=temperature_2m"
-try:
-    with urllib.request.urlopen(url) as response:
-        data = json.loads(response.read())
-        temp = data["current"]["temperature_2m"]
-        print(f"Current temperature: {temp}°C")
-except Exception as e:
-    print("Could not fetch weather:", e)
-""",
+        starterCode: SessionScaffolds.week25,
         challengeQuestion: "What format do most APIs return?",
         challengeAnswer: "JSON",
         challengeAcceptedAnswers: ["json"]
@@ -1298,32 +1106,7 @@ except Exception as e:
 Save and load application state with JSON files. Extend your Tic-Tac-Toe or cipher app so settings and high scores persist between launches.
 """,
         teacherScript: "Model GameState class with to_dict() and from_dict(). Write json.dump / json.load.",
-        starterCode: """
-import json
-
-class GameState:
-    def __init__(self, board=None, current="X", wins_x=0, wins_o=0):
-        self.board = board or [""] * 9
-        self.current = current
-        self.wins_x = wins_x
-        self.wins_o = wins_o
-
-    def save(self, path="game_state.json"):
-        with open(path, "w") as f:
-            json.dump(self.__dict__, f)
-
-    @classmethod
-    def load(cls, path="game_state.json"):
-        with open(path) as f:
-            data = json.load(f)
-        return cls(**data)
-
-state = GameState()
-state.wins_x = 2
-state.save()
-loaded = GameState.load()
-print("Loaded wins X:", loaded.wins_x)
-""",
+        starterCode: SessionScaffolds.week26,
         challengeQuestion: "Which module serializes Python data to a file?",
         challengeAnswer: "json",
         challengeAcceptedAnswers: ["JSON"]
@@ -1337,29 +1120,7 @@ print("Loaded wins X:", loaded.wins_x)
 Review pygame for graphics, events, and game loops. Polish an earlier game with sprites, scoring, or sound — bridging GUI apps and interactive games.
 """,
         teacherScript: "Quick pygame window + event loop. Connect to Coin Collector or a new mini-game.",
-        starterCode: """
-import pygame
-pygame.init()
-screen = pygame.display.set_mode((400, 300))
-pygame.display.set_caption("Level 3 Game Review")
-clock = pygame.time.Clock()
-running = True
-x, y = 200, 150
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT]: x -= 4
-    if keys[pygame.K_RIGHT]: x += 4
-    if keys[pygame.K_UP]: y -= 4
-    if keys[pygame.K_DOWN]: y += 4
-    screen.fill((30, 30, 60))
-    pygame.draw.circle(screen, (100, 200, 255), (x, y), 20)
-    pygame.display.flip()
-    clock.tick(60)
-pygame.quit()
-""",
+        starterCode: SessionScaffolds.week27,
         challengeQuestion: "What pygame function updates the display each frame?",
         challengeAnswer: "display.flip",
         challengeAcceptedAnswers: ["pygame.display.flip", "flip"]
@@ -1373,31 +1134,7 @@ pygame.quit()
 Organize Level 3 projects with classes and modules. Refactor your text editor, game, or cipher app into reusable components ready for a portfolio folder.
 """,
         teacherScript: "One class per major feature. Split into files: models.py, gui.py, main.py.",
-        starterCode: """
-class CipherEngine:
-    def __init__(self, shift=3):
-        self.shift = shift
-
-    def encrypt(self, text):
-        result = ""
-        for char in text:
-            if char.isalpha():
-                base = ord("A") if char.isupper() else ord("a")
-                result += chr((ord(char) - base + self.shift) % 26 + base)
-            else:
-                result += char
-        return result
-
-class AppState:
-    def __init__(self):
-        self.history = []
-
-    def log(self, message):
-        self.history.append(message)
-
-engine = CipherEngine(5)
-print(engine.encrypt("HELLO"))
-""",
+        starterCode: SessionScaffolds.week28,
         challengeQuestion: "What OOP concept groups data and behavior together?",
         challengeAnswer: "class",
         challengeAcceptedAnswers: ["classes", "object"]
@@ -1411,19 +1148,7 @@ print(engine.encrypt("HELLO"))
 Design your own Level 3 capstone: extend the text editor, Tic-Tac-Toe, cipher app, or file organizer. Write milestones and implement the first working feature.
 """,
         teacherScript: "Review project checklist. Pick one path. Goal: one demo-able feature by end of class.",
-        starterCode: """
-print("=== Level 3 Final Project Plan ===")
-print("Option A: Text editor with word count + save")
-print("Option B: Tic-Tac-Toe vs computer")
-print("Option C: Cipher app with decode + history")
-print("Option D: File organizer GUI")
-print()
-print("Milestones:")
-print("  1. Core feature works in Terminal or GUI")
-print("  2. Error handling for bad input")
-print("  3. Save/load or high score")
-print("  4. README + demo script")
-""",
+        starterCode: SessionScaffolds.week29,
         challengeQuestion: "What should you finish before adding extra features?",
         challengeAnswer: "core feature",
         challengeAcceptedAnswers: ["one working path", "main feature", "mvp"]
@@ -1434,7 +1159,7 @@ print("  4. README + demo script")
         sessionNumber: 10,
         title: "Graduation · Level 3 Showcase",
         body: """
-Present your Level 3 final project. Play review games, celebrate GUI and recursion skills, and prepare for Outschool Level 4 — paradigms, algorithms, and professional projects.
+Present your Level 3 final project. Play review games, celebrate GUI and recursion skills, and prepare for Level 4 — paradigms, algorithms, and professional projects.
 """,
         teacherScript: "2-minute demo. Export progress backup. Preview Level 4 calculator + adventure game topics.",
         starterCode: """
@@ -1451,14 +1176,14 @@ print("· Recursion & os module")
 print("· APIs & data persistence")
 print("· OOP project structure")
 print()
-print("Next up: Outschool Level 4 (weeks 31–40)")
+print("Next up: Level 4 (weeks 31–40)")
 """,
-        challengeQuestion: "What course comes after Level 3 in David Sofield's track?",
+        challengeQuestion: "What level comes after Level 3 in the app journey?",
         challengeAnswer: "Level 4",
-        challengeAcceptedAnswers: ["level 4", "All About Python Programming Level 4"]
+        challengeAcceptedAnswers: ["level 4", "L4", "weeks 31"]
     )
 
-    // MARK: - Outschool Level 4 live lessons (weeks 31–40)
+    // MARK: - Level 4 sessions (weeks 31–40)
 
     private static func level4Live(
         week: Int,
@@ -1473,11 +1198,11 @@ print("Next up: Outschool Level 4 (weeks 31–40)")
         challengeAcceptedAnswers: [String]? = nil,
         codeTests: [CodeTest]? = nil
     ) -> LessonStep {
-        outschoolLive(
+        sessionLesson(
             week: week,
             sessionNumber: sessionNumber,
             title: title,
-            body: body + "\n\n**Outschool Level 4** · [David Sofield](https://outschool.com/classes/all-about-python-programming-level-4-CrjwKFPw) · 60 min online live lesson.",
+            body: body + "\n\n**Level 4** · ~30 min app lesson.",
             teacherScript: teacherScript,
             tryItPrompt: tryItPrompt,
             starterCode: starterCode,
@@ -1485,7 +1210,7 @@ print("Next up: Outschool Level 4 (weeks 31–40)")
             challengeAnswer: challengeAnswer,
             challengeAcceptedAnswers: challengeAcceptedAnswers,
             codeTests: codeTests,
-            liveTitlePrefix: "Level 4 Live"
+            sessionTitlePrefix: "Level 4 Session"
         )
     }
 
@@ -1503,18 +1228,18 @@ print("Next up: Outschool Level 4 (weeks 31–40)")
         challengeAnswer: String? = nil,
         challengeAcceptedAnswers: [String]? = nil
     ) -> LessonStep {
-        outschoolLive(
+        sessionLesson(
             week: week,
             sessionNumber: labNumber,
             title: title,
-            body: body + "\n\n**Level 4 Portfolio Lab** · Course 4 · Apply Level 4 live lessons to a portfolio project.",
+            body: body + "\n\n**Level 4 Portfolio Lab** · Course 4 · Apply Level 4 sessions to a portfolio project.",
             teacherScript: teacherScript,
             tryItPrompt: tryItPrompt,
             starterCode: starterCode,
             challengeQuestion: challengeQuestion,
             challengeAnswer: challengeAnswer,
             challengeAcceptedAnswers: challengeAcceptedAnswers,
-            liveTitlePrefix: "Portfolio Lab"
+            sessionTitlePrefix: "Portfolio Lab"
         )
     }
 
@@ -1523,36 +1248,10 @@ print("Next up: Outschool Level 4 (weeks 31–40)")
         labNumber: 1,
         title: "Multi-Paradigm Calculator",
         body: """
-Extend your calculator with professional error handling, calculation history, and at least two programming styles (functions + class). This is Portfolio Project #1 from Outschool Level 4.
+Extend your calculator with professional error handling, calculation history, and at least two programming styles (functions + class). This is Portfolio Project #1 from Level 4.
 """,
         teacherScript: "Compare Calculator as functions vs Calculator class. Log each operation to a history list. Handle divide-by-zero gracefully.",
-        starterCode: """
-class Calculator:
-    def __init__(self):
-        self.history = []
-
-    def calculate(self, a, op, b):
-        try:
-            if op == "+":
-                result = a + b
-            elif op == "-":
-                result = a - b
-            elif op == "*":
-                result = a * b
-            elif op == "/":
-                result = a / b
-            else:
-                raise ValueError("Unknown operator")
-            self.history.append(f"{a} {op} {b} = {result}")
-            return result
-        except ZeroDivisionError:
-            return "Error: divide by zero"
-
-calc = Calculator()
-print(calc.calculate(10, "/", 2))
-print(calc.calculate(5, "*", 3))
-print("History:", calc.history)
-""",
+        starterCode: SessionScaffolds.week41,
         challengeQuestion: "What should happen when the user divides by zero?",
         challengeAnswer: "error message",
         challengeAcceptedAnswers: ["handle error", "zero division", "catch error"]
@@ -1566,39 +1265,7 @@ print("History:", calc.history)
 Build a complete text adventure with rooms, inventory, items to collect, and win/lose states. Save game state to JSON. Portfolio Project #2 from Level 4.
 """,
         teacherScript: "Minimum: 3 rooms, 1 item, 1 puzzle. Bonus: save/load with json module.",
-        starterCode: """
-import json
-
-class Game:
-    def __init__(self):
-        self.room = "forest"
-        self.inventory = []
-
-    def move(self, direction):
-        exits = {"forest": {"north": "cave"}, "cave": {"south": "forest", "east": "treasure"}}
-        if direction in exits.get(self.room, {}):
-            self.room = exits[self.room][direction]
-            print("You enter the", self.room)
-        else:
-            print("Can't go that way.")
-
-    def take(self, item):
-        if self.room == "treasure" and item == "gem":
-            self.inventory.append(item)
-            print("You took the gem! You win!")
-        else:
-            print("Nothing to take here.")
-
-    def save(self, filename="savegame.json"):
-        with open(filename, "w") as f:
-            json.dump({"room": self.room, "inventory": self.inventory}, f)
-
-game = Game()
-game.move("north")
-game.move("east")
-game.take("gem")
-game.save()
-""",
+        starterCode: SessionScaffolds.week42,
         challengeQuestion: "Which module saves game state to a file?",
         challengeAnswer: "json",
         challengeAcceptedAnswers: ["import json"]
@@ -1612,27 +1279,7 @@ game.save()
 Build a tool that shows sorting algorithms step-by-step. Print each swap or compare so you can see bubble sort and selection sort in action. Portfolio Project #3 from Level 4.
 """,
         teacherScript: "Add a counter for comparisons. Time two algorithms on the same list with time module.",
-        starterCode: """
-import time
-
-def bubble_sort_visual(arr):
-    a = arr.copy()
-    steps = 0
-    n = len(a)
-    for i in range(n):
-        for j in range(0, n - i - 1):
-            steps += 1
-            if a[j] > a[j + 1]:
-                a[j], a[j + 1] = a[j + 1], a[j]
-                print(f"Step {steps}: swap → {a}")
-    return a, steps
-
-data = [5, 1, 4, 2, 8]
-start = time.time()
-sorted_data, total_steps = bubble_sort_visual(data)
-print(f"Done in {total_steps} steps, {time.time() - start:.4f}s")
-print("Result:", sorted_data)
-""",
+        starterCode: SessionScaffolds.week43,
         challengeQuestion: "Which sort compares neighbors and swaps?",
         challengeAnswer: "bubble sort",
         challengeAcceptedAnswers: ["bubble"]
@@ -1646,37 +1293,7 @@ print("Result:", sorted_data)
 Develop a maze pathfinding game using BFS (or A* if ready). Generate a grid, mark walls, find shortest path from S to G. Portfolio Project #4 from Level 4.
 """,
         teacherScript: "Print the path as a list of coordinates. Highlight path cells when displaying the grid.",
-        starterCode: """
-from collections import deque
-
-grid = [
-    "S...",
-    ".#..",
-    "..#.",
-    "...G",
-]
-
-def bfs(grid, start, goal):
-    queue = deque([(start, [start])])
-    visited = {start}
-    while queue:
-        (r, c), path = queue.popleft()
-        if (r, c) == goal:
-            return path
-        for dr, dc in [(-1,0),(1,0),(0,-1),(0,1)]:
-            nr, nc = r + dr, c + dc
-            if 0 <= nr < len(grid) and 0 <= nc < len(grid[0]):
-                if grid[nr][nc] != "#" and (nr, nc) not in visited:
-                    visited.add((nr, nc))
-                    queue.append(((nr, nc), path + [(nr, nc)]))
-    return None
-
-start = (0, 0)
-goal = (3, 3)
-path = bfs(grid, start, goal)
-print("Path length:", len(path) if path else "No path")
-print("Path:", path)
-""",
+        starterCode: SessionScaffolds.week44,
         challengeQuestion: "What algorithm finds shortest path in an unweighted grid?",
         challengeAnswer: "BFS",
         challengeAcceptedAnswers: ["breadth first search", "bfs"]
@@ -1691,25 +1308,7 @@ Engineer a weather analysis app that processes real or sample data with basic ma
 """,
         teacherScript: "Start with CSV sample data; swap in API fetch when ready. Plot predictions with matplotlib.",
         tryItPrompt: "pip3 install scikit-learn pandas matplotlib",
-        starterCode: """
-# pip3 install scikit-learn pandas
-import pandas as pd
-from sklearn.tree import DecisionTreeClassifier
-
-records = pd.DataFrame([
-    {"temp_f": 95, "humidity": 80, "label": "hot"},
-    {"temp_f": 72, "humidity": 50, "label": "mild"},
-    {"temp_f": 45, "humidity": 90, "label": "cold"},
-    {"temp_f": 88, "humidity": 70, "label": "hot"},
-    {"temp_f": 65, "humidity": 55, "label": "mild"},
-])
-
-X = records[["temp_f", "humidity"]]
-y = records["label"]
-model = DecisionTreeClassifier(max_depth=3)
-model.fit(X, y)
-print("Predict hot day:", model.predict([[90, 75]]))
-""",
+        starterCode: SessionScaffolds.week45,
         challengeQuestion: "What two features does this model use?",
         challengeAnswer: "temp humidity",
         challengeAcceptedAnswers: ["temperature and humidity", "temp_f humidity"]
@@ -1723,28 +1322,7 @@ print("Predict hot day:", model.predict([[90, 75]]))
 Design a professional Tkinter GUI from scratch — layout, labels, buttons, and event handling. Present weather or ML results in a polished window. Portfolio Project #6 from Level 4.
 """,
         teacherScript: "Use grid() for alignment. Add a status bar label. Match colors to a simple theme.",
-        starterCode: """
-import tkinter as tk
-
-root = tk.Tk()
-root.title("Soha Weather Dashboard")
-root.geometry("360x240")
-root.configure(bg="#1a1a2e")
-
-tk.Label(root, text="Weather Dashboard", font=("Arial", 16, "bold"),
-         fg="white", bg="#1a1a2e").pack(pady=12)
-
-result = tk.Label(root, text="Click refresh to load data",
-                  fg="#a8dadc", bg="#1a1a2e", wraplength=320)
-result.pack(pady=8)
-
-def refresh():
-    result.config(text="Houston: 85°F, partly cloudy\\nHumidity: 70%")
-
-tk.Button(root, text="Refresh", command=refresh,
-          bg="#457b9d", fg="white").pack(pady=8)
-root.mainloop()
-""",
+        starterCode: SessionScaffolds.week46,
         challengeQuestion: "Which Tkinter method places widgets in rows and columns?",
         challengeAnswer: "grid",
         challengeAcceptedAnswers: [".grid()", "grid()"]
@@ -1758,23 +1336,7 @@ root.mainloop()
 Review all six portfolio projects. Choose your final project: Game Development, Data Science, or Algorithm Visualization. Write a design doc with milestones. Week 1 of final project (Level 4 Lesson 9).
 """,
         teacherScript: "Pick one project that excites Soha most. Rubric: working demo, clean code, README, 2-min presentation.",
-        starterCode: """
-print("=== Level 4 Final Project Proposal ===")
-print("Track (pick one): Game / Data Science / Algorithm Viz")
-print()
-print("Project title: _______________________")
-print("Problem it solves:")
-print("  ")
-print("Features (must-have):")
-print("  1.")
-print("  2.")
-print("  3.")
-print()
-print("Portfolio pieces to reuse:")
-print("[ ] Calculator patterns  [ ] Adventure game state")
-print("[ ] Algorithm viz        [ ] Pathfinding")
-print("[ ] Weather ML           [ ] Custom GUI")
-""",
+        starterCode: SessionScaffolds.week47,
         challengeQuestion: "How many portfolio projects should you complete before the final?",
         challengeAnswer: "6",
         challengeAcceptedAnswers: ["six", "7"]
@@ -1789,20 +1351,7 @@ Implement core features of your chosen final project. Focus on one working path 
 """,
         teacherScript: "Commit or save daily. If stuck >20 min, simplify scope.",
         tryItPrompt: "Create a new .py file in scripts folder; run in Terminal or Playground.",
-        starterCode: """
-# Final project — sprint 1 skeleton
-# Replace with your chosen project
-
-print("=== Sprint 1 Goal ===")
-print("Get ONE core feature working today.")
-print()
-print("# Example: if building a game")
-print("# - player can move OR")
-print("# - one room renders OR")
-print("# - score updates on event")
-print()
-print("Done when: you can demo 30 seconds of real behavior.")
-""",
+        starterCode: SessionScaffolds.week48,
         challengeQuestion: "What is the goal of sprint 1?",
         challengeAnswer: "one core feature",
         challengeAcceptedAnswers: ["core feature working", "working demo"]
@@ -1816,15 +1365,7 @@ print("Done when: you can demo 30 seconds of real behavior.")
 Add polish, error handling, documentation, and testing. Prepare README with install instructions. Level 4 capstone build week 2.
 """,
         teacherScript: "README template: Title, Description, How to Run, pip installs, Screenshot.",
-        starterCode: """
-print("=== Sprint 2 Checklist ===")
-print("[ ] Error handling on user input")
-print("[ ] README.md with run instructions")
-print("[ ] Docstrings on main functions/classes")
-print("[ ] Tested happy path + one edge case")
-print("[ ] Removed debug print statements")
-print("[ ] 2-minute demo script written")
-""",
+        starterCode: SessionScaffolds.week49,
         challengeQuestion: "What file explains how to run your project?",
         challengeAnswer: "README",
         challengeAcceptedAnswers: ["readme.md", "README.md"]
@@ -1835,7 +1376,7 @@ print("[ ] 2-minute demo script written")
         labNumber: 10,
         title: "Level 4 Graduation & Showcase",
         body: """
-Finalize your project and deliver a professional presentation. Code documentation, technical demo, peer feedback. Graduate Outschool Level 4 and Course 4! David Sofield suggests AI/ML Level 1 as the natural next class.
+Finalize your project and deliver a professional presentation. Code documentation, technical demo, peer feedback. Graduate Level 4 and the portfolio track! AI/ML Level 1 is a great next step.
 """,
         teacherScript: "Celebrate! Export Python Coach progress. Screenshot all 7 portfolio pieces + final project folder.",
         tryItPrompt: "Progress tab → Export progress JSON.",
@@ -1850,12 +1391,11 @@ print("  5. Weather Prediction ML")
 print("  6. Custom GUI Application")
 print("  7. Final Project (your choice)")
 print()
-print("Next recommended: AI and Machine Learning Level 1")
-print("https://outschool.com/teachers/David-Sofield")
+print("Next step: AI and Machine Learning Level 1 (deeper projects)")
 """,
-        challengeQuestion: "What class does David Sofield suggest after Level 4?",
+        challengeQuestion: "What topic is recommended after completing Level 4?",
         challengeAnswer: "AI and Machine Learning Level 1",
-        challengeAcceptedAnswers: ["ML Level 1", "AI ML Level 1", "machine learning"]
+        challengeAcceptedAnswers: ["ML Level 1", "AI ML Level 1", "machine learning", "AI ML"]
     )
 
     private static let proLive1 = level4Live(
@@ -1866,31 +1406,7 @@ print("https://outschool.com/teachers/David-Sofield")
 Explore different approaches to writing code and choosing the right tool for each challenge. Learn procedural, object-oriented, and functional styles. Build a multi-functional calculator while practicing clear, maintainable code organization.
 """,
         teacherScript: "Compare three versions of the same calculator feature: plain functions, a Calculator class, and map/filter. Ask: which is easiest to extend?",
-        starterCode: """
-# Procedural style
-def add(a, b):
-    return a + b
-
-def subtract(a, b):
-    return a - b
-
-# Simple REPL calculator
-print("Multi-function Calculator")
-while True:
-    op = input("Op (+, -, *, /, q): ").strip()
-    if op == "q":
-        break
-    a = float(input("First number: "))
-    b = float(input("Second number: "))
-    if op == "+":
-        print(add(a, b))
-    elif op == "-":
-        print(subtract(a, b))
-    elif op == "*":
-        print(a * b)
-    elif op == "/":
-        print(a / b if b else "Cannot divide by zero")
-""",
+        starterCode: SessionScaffolds.week31,
         challengeQuestion: "Name two programming paradigms introduced today.",
         challengeAnswer: "procedural object-oriented",
         challengeAcceptedAnswers: ["oop", "functional", "object oriented"]
@@ -1905,31 +1421,7 @@ Deep dive into OOP — the style used in video games and mobile apps. Create cla
 """,
         teacherScript: "Draw Room → North/South/East/West connections on paper first. One class per file is OK for bigger projects.",
         tryItPrompt: "Add a second room and one collectible item.",
-        starterCode: """
-class Room:
-    def __init__(self, name, description):
-        self.name = name
-        self.description = description
-        self.exits = {}
-        self.items = []
-
-    def add_exit(self, direction, room):
-        self.exits[direction] = room
-
-class Player:
-    def __init__(self, start_room):
-        self.location = start_room
-        self.inventory = []
-
-start = Room("Forest", "Tall trees block the sun.")
-cave = Room("Cave", "It is dark and cool inside.")
-start.add_exit("north", cave)
-
-player = Player(start)
-print("You are in:", player.location.name)
-print(player.location.description)
-print("Exits:", list(player.location.exits.keys()))
-""",
+        starterCode: SessionScaffolds.week32,
         challengeQuestion: "In OOP, what connects one Room to another?",
         challengeAnswer: "exits",
         challengeAcceptedAnswers: ["exit", "dictionary", "add_exit"]
@@ -1943,28 +1435,7 @@ print("Exits:", list(player.location.exits.keys()))
 Learn functional programming — the approach used at scale by companies like Amazon and Facebook. Build data processing pipelines with map, filter, and reduce. Write code that is easier to test and debug.
 """,
         teacherScript: "Same task three ways: for-loop, list comprehension, map/filter. Discuss which is clearest for Soha.",
-        starterCode: """
-numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-
-# Functional style: map and filter
-evens = list(filter(lambda n: n % 2 == 0, numbers))
-squares = list(map(lambda n: n * n, evens))
-
-from functools import reduce
-total = reduce(lambda a, b: a + b, squares)
-
-print("Evens:", evens)
-print("Squares of evens:", squares)
-print("Sum:", total)
-
-# Pure function — same input always same output
-def celsius_to_fahrenheit(c):
-    return c * 9 / 5 + 32
-
-temps_c = [0, 10, 20, 30]
-temps_f = list(map(celsius_to_fahrenheit, temps_c))
-print("°F:", temps_f)
-""",
+        starterCode: SessionScaffolds.week33,
         challengeQuestion: "Which function combines a list into one value?",
         challengeAnswer: "reduce",
         challengeAcceptedAnswers: ["functools.reduce"]
@@ -1978,35 +1449,7 @@ print("°F:", temps_f)
 Dive into algorithms: how computers sort and search data efficiently. Explore bubble sort, binary search, and Big-O intuition with interactive print-based visualizations. Skills that matter for CS classes and coding interviews.
 """,
         teacherScript: "Sort a small list by hand first, then run bubble sort line by line. Ask: why is binary search faster than linear search?",
-        starterCode: """
-def bubble_sort(arr):
-    a = arr.copy()
-    n = len(a)
-    for i in range(n):
-        for j in range(0, n - i - 1):
-            if a[j] > a[j + 1]:
-                a[j], a[j + 1] = a[j + 1], a[j]
-                print("  swap →", a)
-    return a
-
-def binary_search(sorted_list, target):
-    low, high = 0, len(sorted_list) - 1
-    while low <= high:
-        mid = (low + high) // 2
-        print(f"  check index {mid} = {sorted_list[mid]}")
-        if sorted_list[mid] == target:
-            return mid
-        if sorted_list[mid] < target:
-            low = mid + 1
-        else:
-            high = mid - 1
-    return -1
-
-data = [5, 1, 4, 2, 8]
-print("Bubble sort:")
-sorted_data = bubble_sort(data)
-print("Binary search for 4:", binary_search(sorted_data, 4))
-""",
+        starterCode: SessionScaffolds.week34,
         challengeQuestion: "Which search requires a sorted list?",
         challengeAnswer: "binary search",
         challengeAcceptedAnswers: ["binary"]
@@ -2020,38 +1463,7 @@ print("Binary search for 4:", binary_search(sorted_data, 4))
 Organize data with stacks, queues, and grids. Build an interactive pathfinding game like those in video games and GPS — find a route from start to goal on a 2D map using BFS-style search.
 """,
         teacherScript: "Draw a 4×4 grid on paper. Mark start (S) and goal (G). Trace the path before coding.",
-        starterCode: """
-# Simple grid pathfinding (BFS-style)
-grid = [
-    "S...",
-    ".#..",
-    "..#.",
-    "...G",
-]
-
-def find_start_goal(g):
-    start = goal = None
-    for r, row in enumerate(g):
-        for c, cell in enumerate(row):
-            if cell == "S":
-                start = (r, c)
-            if cell == "G":
-                goal = (r, c)
-    return start, goal
-
-def neighbors(r, c, g):
-    rows, cols = len(g), len(g[0])
-    for dr, dc in [(-1,0),(1,0),(0,-1),(0,1)]:
-        nr, nc = r + dr, c + dc
-        if 0 <= nr < rows and 0 <= nc < cols and g[nr][nc] != "#":
-            yield nr, nc
-
-start, goal = find_start_goal(grid)
-print("Start:", start, "Goal:", goal)
-print("Grid:")
-for row in grid:
-    print(" ", row)
-""",
+        starterCode: SessionScaffolds.week35,
         challengeQuestion: "What character blocks movement in the grid?",
         challengeAnswer: "#",
         challengeAcceptedAnswers: ["hash", "wall"]
@@ -2066,23 +1478,7 @@ Enter AI and machine learning: train prediction systems with scikit-learn. Build
 """,
         teacherScript: "Split data into train/test. Never evaluate on training data only. Connect to Science Bowl: predict subject from question keywords.",
         tryItPrompt: "pip3 install scikit-learn",
-        starterCode: """
-# pip3 install scikit-learn
-from sklearn.model_selection import train_test_split
-from sklearn.neighbors import KNeighborsClassifier
-
-# Predict subject from (word_count, question_mark)
-X = [[5, 0], [12, 1], [8, 0], [20, 1], [6, 0], [15, 1]]  # features
-y = [0, 1, 0, 1, 0, 1]  # 0=chemistry, 1=biology
-
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
-
-model = KNeighborsClassifier(n_neighbors=3)
-model.fit(X_train, y_train)
-score = model.score(X_test, y_test)
-print(f"Test accuracy: {score:.0%}")
-print("Prediction:", model.predict([[10, 1]]))
-""",
+        starterCode: SessionScaffolds.week36,
         challengeQuestion: "What sklearn method measures accuracy on held-out data?",
         challengeAnswer: "score",
         challengeAcceptedAnswers: [".score()", "model.score"]
@@ -2096,34 +1492,7 @@ print("Prediction:", model.predict([[10, 1]]))
 Create user-friendly graphical interfaces so anyone can use your programs. Build interactive displays for machine learning results — buttons, labels, and charts in Tkinter that make complex data understandable.
 """,
         teacherScript: "Wire a Predict button to your ML model from last week. Show prediction result in a Label widget.",
-        starterCode: """
-import tkinter as tk
-
-root = tk.Tk()
-root.title("ML Predictor GUI")
-root.geometry("340x220")
-
-tk.Label(root, text="Enter two features:", font=("Arial", 12)).pack(pady=8)
-f1 = tk.Entry(root)
-f2 = tk.Entry(root)
-f1.pack()
-f2.pack()
-
-result = tk.Label(root, text="Prediction will appear here", wraplength=300)
-result.pack(pady=10)
-
-def predict():
-    try:
-        a, b = float(f1.get()), float(f2.get())
-        # Replace with your trained model.predict([[a, b]])
-        label = "biology" if a + b > 15 else "chemistry"
-        result.config(text=f"Predicted: {label}")
-    except ValueError:
-        result.config(text="Enter valid numbers.")
-
-tk.Button(root, text="Predict", command=predict).pack()
-root.mainloop()
-""",
+        starterCode: SessionScaffolds.week37,
         challengeQuestion: "Which widget shows text output in Tkinter?",
         challengeAnswer: "Label",
         challengeAcceptedAnswers: ["tk.Label", "label"]
@@ -2138,28 +1507,7 @@ Connect programs to the internet and pull real-world data from online sources. B
 """,
         teacherScript: "Compare raw JSON to a cleaned DataFrame. Discuss API keys and rate limits responsibly.",
         tryItPrompt: "pip3 install requests pandas",
-        starterCode: """
-# pip3 install requests pandas
-import pandas as pd
-
-# Sample weather records (replace with API fetch in live class)
-records = [
-    {"city": "Houston", "temp_f": 85, "humidity": 70},
-    {"city": "Houston", "temp_f": 88, "humidity": 65},
-    {"city": "Dallas", "temp_f": 90, "humidity": 55},
-    {"city": "Dallas", "temp_f": 92, "humidity": 50},
-]
-
-df = pd.DataFrame(records)
-summary = df.groupby("city").agg({"temp_f": "mean", "humidity": "mean"})
-print("Weather analysis:")
-print(summary.round(1))
-
-# API pattern (needs key):
-# import requests
-# r = requests.get("https://api.openweathermap.org/data/2.5/weather?q=Houston&appid=KEY&units=imperial")
-# data = r.json()
-""",
+        starterCode: SessionScaffolds.week38,
         challengeQuestion: "What pandas method groups rows by a column?",
         challengeAnswer: "groupby",
         challengeAcceptedAnswers: [".groupby()", "group by"]
@@ -2174,27 +1522,7 @@ Plan and begin your capstone project applying everything from Courses 1–3. Exp
 """,
         teacherScript: "Use week notes to track milestones. Review one peer's code structure — what would you improve?",
         tryItPrompt: "Write a 1-page project plan: goal, features, timeline, tech stack.",
-        starterCode: """
-print("=== Final Project Plan ===")
-print("Project name: _______________________")
-print()
-print("Goal (one sentence):")
-print("  ")
-print("Features (must-have / nice-to-have):")
-print("  1.")
-print("  2.")
-print("  3.")
-print()
-print("Tech: Python · Tkinter / Flask / sklearn / API")
-print("Week 29: design + core feature")
-print("Week 30: polish + present")
-print()
-print("Code review checklist:")
-print("[ ] Clear function and class names")
-print("[ ] Comments on non-obvious logic")
-print("[ ] Tested main path")
-print("[ ] No hard-coded secrets (API keys)")
-""",
+        starterCode: SessionScaffolds.week39,
         challengeQuestion: "What document breaks a big project into steps before coding?",
         challengeAnswer: "project plan",
         challengeAcceptedAnswers: ["plan", "design doc", "milestones"]
@@ -2235,7 +1563,7 @@ print("  4. Thank you + questions")
         subtitle: "Pass 1 · Jun 8–12 · Foundations",
         emoji: "👋",
         goal: "Run Python and make the computer talk back.",
-        skills: ["print()", "strings", "variables", "Fizz Buzz", "scope"],
+        skills: ["print()", "strings", "variables", "formatting"],
         lessons: [
             LessonStep(
                 id: "w1-l1",
@@ -2309,6 +1637,43 @@ print("Favorite color: blue")
                 challengeQuestion: nil,
                 challengeAnswer: nil
             ),
+            LessonStep(
+                id: "w1-l4",
+                title: "Combining text",
+                body: """
+You can build messages three ways:
+
+1. **Commas in print** — `print("Hi", name)` adds a space automatically.
+2. **Concatenation with +** — `"Hi " + name` joins strings (both must be text).
+3. **Mix text and variables** — `print("Grade:", grade)` is the easiest.
+
+Use straight double quotes `"` in Python, not curly “smart quotes” from Word.
+""",
+                teacherScript: "Have Soha predict the output before each Run. Fix one line together if quotes cause an error.",
+                tryItPrompt: "Print: Soha loves Science Bowl — using variables for name and hobby.",
+                starterCode: """
+name = "Soha"
+hobby = "Science Bowl"
+print("Hi,", name)
+print("I love " + hobby)
+print(name, "is learning Python!")
+""",
+                challengeQuestion: "Which print style adds spaces for you: commas or plus?",
+                challengeAnswer: "commas",
+                challengeAcceptedAnswers: ["comma", "print with commas"],
+                codeTests: [
+                    CodeTest(
+                        id: "w1-l4-strings",
+                        label: "Uses name and hobby in print output",
+                        assertionScript: """
+assert "name" in user_code
+assert "print" in user_code
+assert "hobby" in user_code or "Science" in user_code
+""",
+                        inspectSourceOnly: true
+                    ),
+                ]
+            ),
             live1,
         ]
     )
@@ -2370,6 +1735,52 @@ else:
                 challengeQuestion: nil,
                 challengeAnswer: nil
             ),
+            LessonStep(
+                id: "w2-l4",
+                title: "Lists & dictionaries",
+                body: """
+**List** — ordered items: `order = ["cheese", "pepperoni"]`
+
+**Dictionary** — label → value: `menu = {"cheese": 8, "pepperoni": 10}`
+
+Use `menu["cheese"]` to look up a price. Use `.append()` to add to a list.
+""",
+                teacherScript: "Build the menu dict together before the Pizza project.",
+                tryItPrompt: "Add a veggie pizza for $9.",
+                starterCode: """
+menu = {"cheese": 8, "pepperoni": 10}
+order = []
+order.append("cheese")
+print("Order:", order)
+print("Price:", menu[order[0]])
+""",
+                challengeQuestion: "Which type maps a name to a price?",
+                challengeAnswer: "dictionary",
+                challengeAcceptedAnswers: ["dict"]
+            ),
+            LessonStep(
+                id: "w2-l5",
+                title: "while loops for menus",
+                body: """
+`while True:` repeats until you `break`.
+
+Pattern for a menu:
+1. Ask for input
+2. If input is \"done\", break
+3. Otherwise handle the choice
+""",
+                teacherScript: "Trace one loop by hand: what happens when user types done?",
+                starterCode: """
+count = 0
+while count < 3:
+    print("Round", count + 1)
+    count += 1
+print("Loop finished")
+""",
+                challengeQuestion: "Which keyword exits a while loop early?",
+                challengeAnswer: "break",
+                challengeAcceptedAnswers: ["break statement"]
+            ),
             live2,
         ]
     )
@@ -2379,8 +1790,8 @@ else:
         title: "Loops",
         subtitle: "Pass 1 · Jun 22–26 · Mid-level mastery",
         emoji: "🔁",
-        goal: "Use while and for to repeat actions.",
-        skills: ["while", "for", "range()", "methods", "ternary"],
+        goal: "Use while and for to repeat actions — then build Fizz Buzz.",
+        skills: ["while", "for", "range()", "modulo %", "Fizz Buzz", "methods", "ternary"],
         lessons: [
             LessonStep(
                 id: "w3-l1",
@@ -2427,6 +1838,71 @@ for i in range(1, 11):
 """,
                 challengeQuestion: nil,
                 challengeAnswer: nil
+            ),
+            LessonStep(
+                id: "w3-l4",
+                title: "Fizz Buzz — learn the pieces",
+                body: """
+**Fizz Buzz** is a classic coding puzzle. For each number 1–20:
+
+| Condition | Print |
+|-----------|-------|
+| divisible by 3 **and** 5 | FizzBuzz |
+| divisible by 3 only | Fizz |
+| divisible by 5 only | Buzz |
+| otherwise | the number |
+
+**New operator: `%` (modulo)**  
+`n % 3` is the remainder after dividing n by 3. If the remainder is 0, n is divisible by 3.
+
+Try in Playground:
+```
+print(10 % 3)   # 1
+print(9 % 3)    # 0  → divisible by 3
+```
+
+**for loop review**  
+`for n in range(1, 21):` sets n to 1, 2, …, 20.
+
+**if / elif chain**  
+Check **15 first** (both 3 and 5). If you check `% 3` first, 15 would wrongly print only "Fizz".
+
+Work through the scaffold below line by line before running the full program.
+""",
+                teacherScript: "Paper trace n=15 and n=10 before coding. Common bug: wrong order of if tests. Second common bug: range(1, 20) stops at 19 — use 21.",
+                tryItPrompt: "After it works for 1–20, change the loop to 1–30.",
+                starterCode: """
+# Step 1 — try modulo (Run this first)
+print("10 % 3 =", 10 % 3)
+print("9 % 3 =", 9 % 3)
+
+# Step 2 — complete the Fizz Buzz loop
+for n in range(1, 21):
+    if n % 15 == 0:
+        print("FizzBuzz")
+    elif n % 3 == 0:
+        print("Fizz")
+    elif n % 5 == 0:
+        print("Buzz")
+    else:
+        print(n)
+""",
+                challengeQuestion: "What do you print when n is divisible by both 3 and 5?",
+                challengeAnswer: "FizzBuzz",
+                challengeAcceptedAnswers: ["fizzbuzz"],
+                codeTests: [
+                    CodeTest(
+                        id: "w3-l4-fizz",
+                        label: "Uses for, if, and modulo for Fizz Buzz",
+                        assertionScript: """
+assert "for" in user_code
+assert "%" in user_code
+assert "FizzBuzz" in user_code
+assert "range" in user_code
+""",
+                        inspectSourceOnly: true
+                    ),
+                ]
             ),
             live3,
         ]
@@ -2497,6 +1973,40 @@ print(multiply(6, 7))
                 challengeQuestion: nil,
                 challengeAnswer: nil
             ),
+            LessonStep(
+                id: "w4-l4",
+                title: "Read & write files",
+                body: """
+Files store text on disk.
+
+```python
+with open("notes.txt", "w") as f:
+    f.write("Hello!\\n")
+
+with open("notes.txt") as f:
+    print(f.read())
+```
+
+- `"w"` write (overwrites)
+- `"a"` append (add to end)
+- `"r"` read (default)
+""",
+                teacherScript: "After saving, open notes.txt in TextEdit together.",
+                tryItPrompt: "Append a second line with mode \"a\".",
+                starterCode: """
+with open("notes.txt", "w") as f:
+    f.write("Line 1 from Soha\\n")
+
+with open("notes.txt", "a") as f:
+    f.write("Line 2 appended\\n")
+
+with open("notes.txt") as f:
+    print(f.read())
+""",
+                challengeQuestion: "Which mode appends without erasing?",
+                challengeAnswer: "append",
+                challengeAcceptedAnswers: ["a mode", "append mode"]
+            ),
             live4,
         ]
     )
@@ -2543,6 +2053,50 @@ print("You rolled", dice)
                 starterCode: games[1].starterCode,
                 challengeQuestion: nil,
                 challengeAnswer: nil
+            ),
+            LessonStep(
+                id: "w5-l4",
+                title: "Tuples",
+                body: """
+A **tuple** holds fixed items: `point = (3, 4)`
+
+Unlike lists, tuples cannot change after creation — good for coordinates.
+""",
+                teacherScript: "Compare list vs tuple — when would you use each?",
+                tryItPrompt: nil,
+                starterCode: """
+point = (3, 4)
+print("x:", point[0], "y:", point[1])
+""",
+                challengeQuestion: "Can you change point[0] after creating a tuple?",
+                challengeAnswer: "no",
+                challengeAcceptedAnswers: ["cannot", "immutable"]
+            ),
+            LessonStep(
+                id: "w5-l5",
+                title: "Default parameters & *args",
+                body: """
+**Default parameter:** `def greet(name, msg="Hello"):`
+
+**\\*args** collects extra numbers: `def total(*nums): return sum(nums)`
+""",
+                teacherScript: "Call total with different numbers of arguments.",
+                tryItPrompt: nil,
+                starterCode: """
+def greet(name, greeting="Hello"):
+    print(greeting + ",", name)
+
+greet("Soha")
+greet("Soha", "Hi")
+
+def total(*numbers):
+    return sum(numbers)
+
+print(total(1, 2, 3))
+""",
+                challengeQuestion: "What symbol collects extra arguments?",
+                challengeAnswer: "*args",
+                challengeAcceptedAnswers: ["star args"]
             ),
             live5,
         ]
@@ -2608,6 +2162,35 @@ for c in colors:
                 challengeAnswer: "5",
                 challengeAcceptedAnswers: ["five"]
             ),
+            LessonStep(
+                id: "w6-l4",
+                title: "Tkinter: windows & buttons",
+                body: """
+**Tkinter** builds desktop GUIs.
+
+- `tk.Tk()` — main window
+- `tk.Label` — text
+- `tk.Button` — clickable
+- `.pack()` — place widget
+- `root.mainloop()` — show window (use Open in Terminal)
+
+Complete the list lessons above before Session 6.
+""",
+                teacherScript: "First button click is a big win — celebrate it!",
+                tryItPrompt: "Add a label with today's date.",
+                starterCode: """
+import tkinter as tk
+
+root = tk.Tk()
+root.title("Hello GUI")
+tk.Label(root, text="Hi from Soha!").pack(pady=10)
+tk.Button(root, text="Click me", command=lambda: print("Clicked!")).pack()
+root.mainloop()
+""",
+                challengeQuestion: "Which library creates GUI windows?",
+                challengeAnswer: "tkinter",
+                challengeAcceptedAnswers: ["Tkinter"]
+            ),
             live6,
         ]
     )
@@ -2665,6 +2248,33 @@ pygame.quit()
                 starterCode: games[3].starterCode,
                 challengeQuestion: nil,
                 challengeAnswer: nil
+            ),
+            LessonStep(
+                id: "w7-l4",
+                title: "Plotting with matplotlib",
+                body: """
+**matplotlib** draws charts. Install once: `pip3 install matplotlib`
+
+Use `plt.plot(x, y)` then `plt.show()`.
+
+Run in Terminal or use Open in Terminal from Playground — `plt.show()` needs a display.
+""",
+                teacherScript: "Connect to Science Bowl — plot practice quiz scores over time.",
+                tryItPrompt: "pip3 install matplotlib",
+                starterCode: """
+# pip3 install matplotlib
+import matplotlib.pyplot as plt
+
+scores = [70, 85, 90]
+days = [1, 2, 3]
+plt.plot(days, scores, marker="o")
+plt.title("My Quiz Scores")
+plt.ylim(0, 100)
+plt.show()
+""",
+                challengeQuestion: "Which library draws graphs?",
+                challengeAnswer: "matplotlib",
+                challengeAcceptedAnswers: ["pyplot"]
             ),
             live7,
         ]
@@ -2740,14 +2350,49 @@ print("Try: python3 todo_app.py then open Safari")
                 challengeAnswer: "pip3 install flask",
                 challengeAcceptedAnswers: ["pip install flask"]
             ),
+            LessonStep(
+                id: "w9-l2",
+                title: "Your first Flask route",
+                body: """
+**Flask** serves web pages from Python.
+
+1. `pip3 install flask`
+2. Save app as `.py` file
+3. Run in Terminal: `python3 todo_app.py`
+4. Open Safari to `http://127.0.0.1:5000`
+
+Each `@app.route` maps a URL to a function that returns HTML.
+""",
+                teacherScript: "Flask does not run inside the in-app Playground Run button — use Terminal.",
+                tryItPrompt: "Change the heading to include your name.",
+                starterCode: """
+# pip3 install flask
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "<h1>Hello from Soha!</h1><p>My first web page.</p>"
+
+if __name__ == "__main__":
+    app.run(debug=True)
+""",
+                challengeQuestion: "What URL opens your local Flask app?",
+                challengeAnswer: "127.0.0.1:5000",
+                challengeAcceptedAnswers: ["localhost:5000", "localhost"]
+            ),
             live9,
             LessonStep(
                 id: "w9-l3",
                 title: "Extend your Todo app",
-                body: "After live class: add delete tasks, mark complete, or a counter in the page title.",
+                body: "Add delete tasks, mark complete, or a counter in the page title.",
                 teacherScript: "One feature at a time. Save todo_app.py in the scripts folder.",
                 tryItPrompt: "Add a route /clear that empties the todo list.",
-                starterCode: live9.starterCode,
+                starterCode: """
+# Extend the Session 9 Todo app from the lesson above
+print("Add POST /add route and a form with <input name=task>")
+""",
                 challengeQuestion: nil,
                 challengeAnswer: nil
             ),
@@ -2804,7 +2449,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "🔁",
         goal: "Warm up core Python before advanced topics.",
         skills: ["if/elif/else", "def", "while", "for", "review"],
-        lessons: [advLive1]
+        lessons: sessionWeek(SessionTeachingLessons.week11, advLive1)
     )
 
     private static let week12 = WeekUnit(
@@ -2814,7 +2459,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "🛡️",
         goal: "Handle errors gracefully and start the Caesar Cipher project.",
         skills: ["try/except", "finally", "Caesar cipher", "encryption"],
-        lessons: [advLive2]
+        lessons: sessionWeek(SessionTeachingLessons.week12, advLive2)
     )
 
     private static let week13 = WeekUnit(
@@ -2824,7 +2469,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "🏛️",
         goal: "Finish the cipher and learn object-oriented programming.",
         skills: ["class", "__init__", "methods", "modules"],
-        lessons: [advLive3]
+        lessons: sessionWeek(SessionTeachingLessons.week13, advLive3)
     )
 
     private static let week14 = WeekUnit(
@@ -2834,7 +2479,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "🌤️",
         goal: "Fetch real data from the internet into a GUI app.",
         skills: ["API", "JSON", "requests", "Tkinter"],
-        lessons: [advLive4]
+        lessons: sessionWeek(SessionTeachingLessons.week14, advLive4)
     )
 
     private static let week15 = WeekUnit(
@@ -2844,7 +2489,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "⛅",
         goal: "Ship a working Real-Time Weather Application.",
         skills: ["API integration", "testing", "debugging", "JSON parsing"],
-        lessons: [advLive5]
+        lessons: sessionWeek(SessionTeachingLessons.week15, advLive5)
     )
 
     private static let week16 = WeekUnit(
@@ -2854,7 +2499,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "📊",
         goal: "Work with tables of data using Pandas and NumPy.",
         skills: ["list comprehension", "NumPy", "Pandas", "CSV"],
-        lessons: [advLive6]
+        lessons: sessionWeek(SessionTeachingLessons.week16, advLive6)
     )
 
     private static let week17 = WeekUnit(
@@ -2864,7 +2509,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "📈",
         goal: "Visualize data and start your data-science project.",
         skills: ["Matplotlib", "data science", "graphing", "Pandas"],
-        lessons: [advLive7]
+        lessons: sessionWeek(SessionTeachingLessons.week17, advLive7)
     )
 
     private static let week18 = WeekUnit(
@@ -2874,7 +2519,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "⚡",
         goal: "Advanced function tools and intro to machine learning.",
         skills: ["lambda", "*args", "**kwargs", "machine learning"],
-        lessons: [advLive8]
+        lessons: sessionWeek(SessionTeachingLessons.week18, advLive8)
     )
 
     private static let week19 = WeekUnit(
@@ -2884,7 +2529,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "🎵",
         goal: "Train a machine learning model and practice presenting.",
         skills: ["scikit-learn", "DecisionTree", "ML project", "demo"],
-        lessons: [advLive9]
+        lessons: sessionWeek(SessionTeachingLessons.week19, advLive9)
     )
 
     private static let week20 = WeekUnit(
@@ -2894,7 +2539,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "🎓",
         goal: "Present your final project and graduate Level 2!",
         skills: ["presentation", "portfolio", "peer feedback", "graduation"],
-        lessons: [advLive10]
+        lessons: sessionWeek(SessionTeachingLessons.week20, advLive10)
     )
 
     private static let week21 = WeekUnit(
@@ -2904,7 +2549,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "📝",
         goal: "Build a graphical text editor with open and save.",
         skills: ["Tkinter", "file I/O", "widgets", "GUI"],
-        lessons: [level3Live1]
+        lessons: sessionWeek(SessionTeachingLessons.week21, level3Live1)
     )
 
     private static let week22 = WeekUnit(
@@ -2914,7 +2559,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "⭕",
         goal: "Create a playable Tic-Tac-Toe game with win detection.",
         skills: ["game logic", "Tkinter", "state", "JSON"],
-        lessons: [level3Live2]
+        lessons: sessionWeek(SessionTeachingLessons.week22, level3Live2)
     )
 
     private static let week23 = WeekUnit(
@@ -2924,7 +2569,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "🔐",
         goal: "Build a cipher app combining GUI and encryption.",
         skills: ["encryption", "Tkinter", "error handling", "Caesar cipher"],
-        lessons: [level3Live3]
+        lessons: sessionWeek(SessionTeachingLessons.week23, level3Live3)
     )
 
     private static let week24 = WeekUnit(
@@ -2934,7 +2579,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "📁",
         goal: "Organize files with os module and recursion.",
         skills: ["recursion", "os module", "automation", "base case"],
-        lessons: [level3Live4]
+        lessons: sessionWeek(SessionTeachingLessons.week24, level3Live4)
     )
 
     private static let week25 = WeekUnit(
@@ -2944,7 +2589,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "🌐",
         goal: "Connect your app to live web data.",
         skills: ["API", "JSON", "requests", "networking"],
-        lessons: [level3Live5]
+        lessons: sessionWeek(SessionTeachingLessons.week25, level3Live5)
     )
 
     private static let week26 = WeekUnit(
@@ -2954,7 +2599,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "💾",
         goal: "Persist app state with JSON files.",
         skills: ["JSON", "save/load", "state", "persistence"],
-        lessons: [level3Live6]
+        lessons: sessionWeek(SessionTeachingLessons.week26, level3Live6)
     )
 
     private static let week27 = WeekUnit(
@@ -2964,7 +2609,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "🎮",
         goal: "Review pygame and polish an interactive game.",
         skills: ["pygame", "game loop", "events", "sprites"],
-        lessons: [level3Live7]
+        lessons: sessionWeek(SessionTeachingLessons.week27, level3Live7)
     )
 
     private static let week28 = WeekUnit(
@@ -2974,7 +2619,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "🏗️",
         goal: "Refactor projects with classes and modules.",
         skills: ["OOP", "modules", "refactoring", "architecture"],
-        lessons: [level3Live8]
+        lessons: sessionWeek(SessionTeachingLessons.week28, level3Live8)
     )
 
     private static let week29 = WeekUnit(
@@ -2984,7 +2629,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "📋",
         goal: "Plan and start your Level 3 capstone.",
         skills: ["planning", "milestones", "implementation", "MVP"],
-        lessons: [level3Live9]
+        lessons: sessionWeek(SessionTeachingLessons.week29, level3Live9)
     )
 
     private static let week30 = WeekUnit(
@@ -2994,7 +2639,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "🎓",
         goal: "Present your capstone and graduate Level 3!",
         skills: ["presentation", "demo", "portfolio", "graduation"],
-        lessons: [level3Live10]
+        lessons: sessionWeek(SessionTeachingLessons.week30, level3Live10)
     )
 
     private static let week31 = WeekUnit(
@@ -3004,7 +2649,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "🧮",
         goal: "Compare procedural, OOP, and functional styles.",
         skills: ["paradigms", "procedural", "maintainability", "calculator"],
-        lessons: [proLive1]
+        lessons: sessionWeek(SessionTeachingLessons.week31, proLive1)
     )
 
     private static let week32 = WeekUnit(
@@ -3014,7 +2659,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "🗺️",
         goal: "Build a text adventure with classes and rooms.",
         skills: ["OOP", "classes", "inheritance", "game design"],
-        lessons: [proLive2]
+        lessons: sessionWeek(SessionTeachingLessons.week32, proLive2)
     )
 
     private static let week33 = WeekUnit(
@@ -3024,7 +2669,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "λ",
         goal: "Process data with map, filter, and reduce.",
         skills: ["functional", "map", "filter", "reduce", "pure functions"],
-        lessons: [proLive3]
+        lessons: sessionWeek(SessionTeachingLessons.week33, proLive3)
     )
 
     private static let week34 = WeekUnit(
@@ -3034,7 +2679,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "⚙️",
         goal: "Understand sorting and searching algorithms.",
         skills: ["bubble sort", "binary search", "Big-O", "algorithms"],
-        lessons: [proLive4]
+        lessons: sessionWeek(SessionTeachingLessons.week34, proLive4)
     )
 
     private static let week35 = WeekUnit(
@@ -3044,7 +2689,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "🎯",
         goal: "Use grids and search for pathfinding.",
         skills: ["stack", "queue", "grid", "BFS", "pathfinding"],
-        lessons: [proLive5]
+        lessons: sessionWeek(SessionTeachingLessons.week35, proLive5)
     )
 
     private static let week36 = WeekUnit(
@@ -3054,7 +2699,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "🤖",
         goal: "Train and evaluate ML models professionally.",
         skills: ["AI", "train/test split", "KNeighbors", "evaluation"],
-        lessons: [proLive6]
+        lessons: sessionWeek(SessionTeachingLessons.week36, proLive6)
     )
 
     private static let week37 = WeekUnit(
@@ -3064,7 +2709,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "🖥️",
         goal: "Present ML results in a Tkinter GUI.",
         skills: ["Tkinter", "GUI", "ML display", "user experience"],
-        lessons: [proLive7]
+        lessons: sessionWeek(SessionTeachingLessons.week37, proLive7)
     )
 
     private static let week38 = WeekUnit(
@@ -3074,7 +2719,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "🌐",
         goal: "Fetch and analyze real-world API data.",
         skills: ["API", "pandas", "groupby", "data processing"],
-        lessons: [proLive8]
+        lessons: sessionWeek(SessionTeachingLessons.week38, proLive8)
     )
 
     private static let week39 = WeekUnit(
@@ -3084,17 +2729,17 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "📋",
         goal: "Plan and begin your capstone project.",
         skills: ["project planning", "system design", "code review"],
-        lessons: [proLive9]
+        lessons: sessionWeek(SessionTeachingLessons.week39, proLive9)
     )
 
     private static let week40 = WeekUnit(
         id: 40,
-        title: "Graduation · Level 4 Live",
+        title: "Graduation · Level 4 Session",
         subtitle: "Professional presentation showcase",
         emoji: "🏆",
         goal: "Ship your capstone and present like a pro.",
         skills: ["documentation", "demo", "presentation", "portfolio"],
-        lessons: [proLive10]
+        lessons: sessionWeek(SessionTeachingLessons.week40, proLive10)
     )
 
     private static let week41 = WeekUnit(
@@ -3104,7 +2749,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "🧮",
         goal: "Ship the multi-paradigm calculator with history and error handling.",
         skills: ["OOP", "error handling", "calculator", "portfolio"],
-        lessons: [portfolio1]
+        lessons: sessionWeek(SessionTeachingLessons.week41, portfolio1)
     )
 
     private static let week42 = WeekUnit(
@@ -3114,7 +2759,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "🗺️",
         goal: "Complete a text adventure with save/load.",
         skills: ["game state", "JSON", "inventory", "rooms"],
-        lessons: [portfolio2]
+        lessons: sessionWeek(SessionTeachingLessons.week42, portfolio2)
     )
 
     private static let week43 = WeekUnit(
@@ -3124,7 +2769,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "📊",
         goal: "Visualize sorting algorithms step by step.",
         skills: ["bubble sort", "visualization", "performance", "algorithms"],
-        lessons: [portfolio3]
+        lessons: sessionWeek(SessionTeachingLessons.week43, portfolio3)
     )
 
     private static let week44 = WeekUnit(
@@ -3134,7 +2779,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "🎯",
         goal: "Build a maze pathfinding game with BFS.",
         skills: ["BFS", "maze", "grid", "pathfinding"],
-        lessons: [portfolio4]
+        lessons: sessionWeek(SessionTeachingLessons.week44, portfolio4)
     )
 
     private static let week45 = WeekUnit(
@@ -3144,7 +2789,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "⛅",
         goal: "Predict weather patterns with ML.",
         skills: ["sklearn", "pandas", "weather data", "prediction"],
-        lessons: [portfolio5]
+        lessons: sessionWeek(SessionTeachingLessons.week45, portfolio5)
     )
 
     private static let week46 = WeekUnit(
@@ -3154,7 +2799,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "🖥️",
         goal: "Build a polished Tkinter dashboard.",
         skills: ["Tkinter", "GUI design", "events", "layout"],
-        lessons: [portfolio6]
+        lessons: sessionWeek(SessionTeachingLessons.week46, portfolio6)
     )
 
     private static let week47 = WeekUnit(
@@ -3164,7 +2809,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "📋",
         goal: "Choose and plan your Level 4 capstone.",
         skills: ["design doc", "planning", "portfolio review"],
-        lessons: [portfolio7]
+        lessons: sessionWeek(SessionTeachingLessons.week47, portfolio7)
     )
 
     private static let week48 = WeekUnit(
@@ -3174,7 +2819,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "🔨",
         goal: "Get one core feature working end-to-end.",
         skills: ["implementation", "debugging", "sprint"],
-        lessons: [portfolio8]
+        lessons: sessionWeek(SessionTeachingLessons.week48, portfolio8)
     )
 
     private static let week49 = WeekUnit(
@@ -3184,7 +2829,7 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "✨",
         goal: "Add README, tests, and polish.",
         skills: ["documentation", "testing", "README"],
-        lessons: [portfolio9]
+        lessons: sessionWeek(SessionTeachingLessons.week49, portfolio9)
     )
 
     private static let week50 = WeekUnit(
@@ -3194,10 +2839,10 @@ print("Next: SwiftUI apps · AI tools · more Flask")
         emoji: "🎓",
         goal: "Present your portfolio and graduate Level 4!",
         skills: ["presentation", "graduation", "portfolio", "showcase"],
-        lessons: [portfolio10]
+        lessons: sessionWeek(SessionTeachingLessons.week50, portfolio10)
     )
 
-    // MARK: - Summer calendar (10 weeks · 5 Outschool sessions each)
+    // MARK: - Summer calendar (10 weeks · 5 app sessions each)
 
     private static func bundleTrackWeeks(
         id: Int,

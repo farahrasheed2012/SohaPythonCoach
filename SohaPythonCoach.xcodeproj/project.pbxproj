@@ -25,6 +25,8 @@
 		A10000000000000000000017 /* PrintableResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000017 /* PrintableResources.swift */; };
 		A10000000000000000000018 /* python-coach-workbook.html in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000018 /* python-coach-workbook.html */; };
 		A10000000000000000000019 /* python-coach-teacher-script.html in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000019 /* python-coach-teacher-script.html */; };
+		A10000000000000000000020 /* SessionTeachingLessons.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000020 /* SessionTeachingLessons.swift */; };
+		A10000000000000000000021 /* SessionScaffolds.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000021 /* SessionScaffolds.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +50,8 @@
 		B10000000000000000000017 /* PrintableResources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/PrintableResources.swift; sourceTree = "<group>"; };
 		B10000000000000000000018 /* python-coach-workbook.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = Resources/Printable/python-coach-workbook.html; sourceTree = "<group>"; };
 		B10000000000000000000019 /* python-coach-teacher-script.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = Resources/Printable/python-coach-teacher-script.html; sourceTree = "<group>"; };
+		B10000000000000000000020 /* SessionTeachingLessons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data/SessionTeachingLessons.swift; sourceTree = "<group>"; };
+		B10000000000000000000021 /* SessionScaffolds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data/SessionScaffolds.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +83,8 @@
 				B10000000000000000000002 /* CurriculumModels.swift */,
 				B10000000000000000000003 /* AppState.swift */,
 				B10000000000000000000004 /* CurriculumSeed.swift */,
+				B10000000000000000000020 /* SessionTeachingLessons.swift */,
+				B10000000000000000000021 /* SessionScaffolds.swift */,
 				B10000000000000000000005 /* PythonRunner.swift */,
 				B10000000000000000000015 /* ChallengeValidator.swift */,
 				B10000000000000000000016 /* ProgressBackupService.swift */,
@@ -158,6 +164,8 @@
 				A10000000000000000000002 /* CurriculumModels.swift in Sources */,
 				A10000000000000000000003 /* AppState.swift in Sources */,
 				A10000000000000000000004 /* CurriculumSeed.swift in Sources */,
+				A10000000000000000000020 /* SessionTeachingLessons.swift in Sources */,
+				A10000000000000000000021 /* SessionScaffolds.swift in Sources */,
 				A10000000000000000000005 /* PythonRunner.swift in Sources */,
 				A10000000000000000000006 /* ContentView.swift in Sources */,
 				A10000000000000000000007 /* JourneyView.swift in Sources */,

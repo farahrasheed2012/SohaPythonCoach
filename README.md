@@ -1,6 +1,6 @@
 # Soha Python Coach
 
-Mac app to teach Soha Python over **10 summer calendar weeks** (Jun 8 – Aug 14) — aligned with Science Bowl Pass 1–3. Each calendar week bundles **5 Outschool sessions** (50 total): Level 1 → Level 2 → Level 3 → Level 4 → Portfolio, plus 5 games and Final Boss.
+Mac app to teach Soha Python over **10 summer calendar weeks** (Jun 8 – Aug 14) — aligned with Science Bowl Pass 1–3. Each calendar week bundles **5 self-paced app sessions** (50 total): Level 1 → Level 2 → Level 3 → Level 4 → Portfolio, plus 5 games and Final Boss.
 
 **v1.1** — saved Playground code per lesson, auto-checks, pygame launcher, progress backup, printables, NSB quiz tie-in.
 
@@ -36,15 +36,15 @@ open ~/Library/Developer/Xcode/DerivedData/SohaPythonCoach-*/Build/Products/Debu
 
 | Tab | What it does |
 |-----|----------------|
-| **Journey** | 10 calendar weeks · 50 Outschool sessions · Pass 1–3 · 5 games |
+| **Journey** | 10 calendar weeks · 50 app sessions · Pass 1–3 · 5 games |
 | **Games** | 5 game projects with starter code + auto-checks |
 | **Final Boss** | Sound + 3 coins + timer checklist |
 | **Playground** | Write & run Python · auto-save · pygame window · Open in Terminal |
 | **Progress** | Dashboard · backup JSON · printables · stuck list |
 
-## 10 calendar weeks (50 Outschool sessions)
+## 10 calendar weeks (50 app sessions)
 
-Each row is one **Science Bowl week**. Open it to see **5 Outschool track weeks** inside (self-paced + live lessons).
+Each row is one **Science Bowl week**. Open it to see **5 Python track weeks** inside (short lessons + project sessions).
 
 | Cal week | Dates | Pass | Python label (same in calendar) |
 |----------|-------|------|----------------------------------|
@@ -71,7 +71,7 @@ Progress tab → **Open student workbook** or **Open teacher script** (HTML, pri
 
 ## After 10 calendar weeks
 
-Soha completes **all 50 Outschool sessions** (Levels 1–4 + portfolio), 5 games, Final Boss, and Flask — ready for AI/ML Level 1 or deeper projects.
+Soha completes **all 50 app sessions** (Levels 1–4 + portfolio), 5 games, Final Boss, and Flask — ready for AI/ML Level 1 or deeper projects.
 
 ## Notes
 

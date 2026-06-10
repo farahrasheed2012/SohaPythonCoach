@@ -16,18 +16,11 @@ struct LessonDetailView: View {
             VStack(alignment: .leading, spacing: 20) {
                 headerRow
 
-                Card(title: lesson.title, subtitle: lessonSubtitle, accent: lesson.isLiveLesson ? .blue : .purple) {
+                Card(title: lesson.title, subtitle: lessonSubtitle, accent: .purple) {
                     Text(lesson.body)
                 }
 
-                if lesson.isLiveLesson {
-                    Card(title: "Online live class", subtitle: "Outschool · 60 minutes", accent: .blue) {
-                        Text("Join the scheduled live session with your instructor. After class, complete the Try it task in Playground.")
-                            .font(.subheadline)
-                    }
-                }
-
-                Card(title: lesson.isLiveLesson ? "Coach notes" : "Teacher script", subtitle: "Words for parent/coach", accent: .orange) {
+                Card(title: "Teacher script", subtitle: "Words for parent/coach", accent: .orange) {
                     Text(lesson.teacherScript)
                         .italic()
                 }
@@ -69,12 +62,18 @@ struct LessonDetailView: View {
         }
         .coachPageBackground()
         .navigationTitle(lesson.title)
+        .onAppear {
+            if appState.isLessonComplete(lesson.id), lesson.challengeQuestion != nil {
+                challengeCorrect = true
+                challengeFeedback = "Correct!"
+            }
+        }
     }
 
     private var lessonSubtitle: String {
         let base = "Journey wk \(week.id) · \(week.title)"
-        if lesson.isLiveLesson, let mins = lesson.durationMinutes {
-            return "\(base) · Live · \(mins) min"
+        if let mins = lesson.durationMinutes {
+            return "\(base) · ~\(mins) min"
         }
         return base
     }
@@ -131,17 +130,33 @@ struct LessonDetailView: View {
         }
     }
 
-    private var completionButtons: some View {
-        Button {
-            appState.toggleLesson(lesson.id)
-        } label: {
-            Label(
-                appState.isLessonComplete(lesson.id) ? "Mark incomplete" : "Mark lesson complete",
-                systemImage: appState.isLessonComplete(lesson.id) ? "arrow.uturn.backward.circle" : "checkmark.circle.fill"
-            )
-            .frame(maxWidth: .infinity)
+    private var canMarkComplete: Bool {
+        if lesson.challengeQuestion != nil {
+            return challengeCorrect || appState.isLessonComplete(lesson.id)
         }
-        .buttonStyle(.borderedProminent)
-        .tint(appState.isLessonComplete(lesson.id) ? .secondary : .green)
+        return true
+    }
+
+    private var completionButtons: some View {
+        VStack(spacing: 8) {
+            if lesson.challengeQuestion != nil, !challengeCorrect, !appState.isLessonComplete(lesson.id) {
+                Text("Answer the quick check correctly before marking complete.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            Button {
+                appState.toggleLesson(lesson.id)
+            } label: {
+                Label(
+                    appState.isLessonComplete(lesson.id) ? "Mark incomplete" : "Mark lesson complete",
+                    systemImage: appState.isLessonComplete(lesson.id) ? "arrow.uturn.backward.circle" : "checkmark.circle.fill"
+                )
+                .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(appState.isLessonComplete(lesson.id) ? .secondary : .green)
+            .disabled(!canMarkComplete && !appState.isLessonComplete(lesson.id))
+        }
     }
 }

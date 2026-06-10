@@ -23,7 +23,7 @@ struct JourneyView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Hi, \(appState.studentName)! 👋")
                     .font(.largeTitle.bold())
-                Text("\(weekCount) calendar weeks · matches summer-2026-calendar · 50 live sessions · 5 games")
+                Text("\(weekCount) calendar weeks · matches summer-2026-calendar · 50 app sessions · 5 games")
                     .foregroundStyle(.secondary)
                 Text("Open the week that matches today’s calendar block (e.g. Week 1 → L1 (1–5)).")
                     .font(.caption)
@@ -105,7 +105,7 @@ private struct WeekCard: View {
                 .lineLimit(2)
             ProgressView(value: progress)
                 .tint(.purple)
-            Text("\(week.lessons.count) lessons · \(week.lessons.filter(\.isLiveLesson).count) live")
+            Text("\(week.lessons.count) lessons")
                 .font(.caption2)
                 .foregroundStyle(.tertiary)
         }
@@ -155,12 +155,12 @@ struct WeekDetailView: View {
                                 HStack(spacing: 6) {
                                     Text(lesson.title)
                                         .font(.headline)
-                                    if lesson.isLiveLesson {
-                                        Text("Live · 60 min")
+                                    if let mins = lesson.durationMinutes {
+                                        Text("~\(mins) min")
                                             .font(.caption2.weight(.bold))
                                             .padding(.horizontal, 6)
                                             .padding(.vertical, 2)
-                                            .background(Color.blue.opacity(0.15))
+                                            .background(Color.purple.opacity(0.12))
                                             .clipShape(Capsule())
                                     }
                                     if appState.isStuck(lesson.id) {

@@ -23,6 +23,7 @@ struct CodeTest: Identifiable, Hashable, Codable {
 
 enum LessonFormat: String, Codable, Hashable {
     case selfPaced
+    /// Legacy value from when sessions pointed at Outschool; treated as self-paced.
     case liveOnline
 }
 
@@ -71,7 +72,7 @@ struct LessonStep: Identifiable, Hashable, Codable {
         self.durationMinutes = durationMinutes
     }
 
-    var isLiveLesson: Bool { format == .liveOnline }
+    var isLiveLesson: Bool { false }
 
     var allAcceptedAnswers: [String] {
         var answers: [String] = []
