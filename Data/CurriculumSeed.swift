@@ -510,8 +510,8 @@ while count < 3:
     count += 1
 """,
         challengeQuestion: "Which mode opens a file for appending without erasing it?",
-        challengeAnswer: "a",
-        challengeAcceptedAnswers: ["append", "a mode"]
+        challengeAnswer: "append",
+        challengeAcceptedAnswers: ["a", "a mode"]
     )
 
     private static let live5 = outschoolLive(

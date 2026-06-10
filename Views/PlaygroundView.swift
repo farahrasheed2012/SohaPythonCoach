@@ -105,8 +105,7 @@ struct PlaygroundView: View {
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
                 .padding(.horizontal, 12)
-            TextEditor(text: $code)
-                .font(.system(.body, design: .monospaced))
+            PythonCodeEditor(text: $code)
                 .scrollContentBackground(.hidden)
                 .padding(8)
                 .background(Color(nsColor: .textBackgroundColor))
@@ -199,14 +198,24 @@ struct PlaygroundView: View {
         }
     }
 
+    private func prepareCodeForRun() -> String {
+        let prepared = PythonRunner.prepareSource(code)
+        if prepared.fixedSmartQuotes {
+            code = prepared.source
+            statusMessage = "Curly quotes were converted to straight quotes (\") — Python needs the plain quote key."
+        }
+        return prepared.source
+    }
+
     private func runCode() async {
         isRunning = true
         defer { isRunning = false }
+        let runnable = prepareCodeForRun()
         if needsTerminal {
             output = "This script needs a window or server. Use Run script or Open in Terminal."
             return
         }
-        let result = await PythonRunner.run(code: code)
+        let result = await PythonRunner.run(code: runnable)
         lastExitCode = result.exitCode
         if let err = result.error, !err.isEmpty {
             output = result.output + (result.output.isEmpty ? "" : "\n") + "— stderr —\n" + err
@@ -218,13 +227,15 @@ struct PlaygroundView: View {
     private func runTests() async {
         isRunning = true
         defer { isRunning = false }
-        testResults = await PythonRunner.runWithTests(userCode: code, tests: codeTests)
+        let runnable = prepareCodeForRun()
+        testResults = await PythonRunner.runWithTests(userCode: runnable, tests: codeTests)
         let passed = testResults.filter(\.passed).count
         output = "Tests: \(passed)/\(codeTests.count) passed."
     }
 
     private func launchPygame() {
-        switch PythonRunner.launchWindowedScript(code: code, suggestedName: scriptFilename) {
+        let runnable = prepareCodeForRun()
+        switch PythonRunner.launchWindowedScript(code: runnable, suggestedName: scriptFilename) {
         case .success(let url):
             statusMessage = "Launched \(url.lastPathComponent). Check for a pygame window."
             output = "Game process started.\n\(url.path)"
@@ -236,7 +247,8 @@ struct PlaygroundView: View {
 
     private func openTerminal() {
         do {
-            let url = try PythonRunner.saveScript(named: scriptFilename, code: code)
+            let runnable = prepareCodeForRun()
+            let url = try PythonRunner.saveScript(named: scriptFilename, code: runnable)
             PythonRunner.openInTerminal(scriptURL: url)
             statusMessage = "Opened Terminal with \(url.lastPathComponent)"
             output = "Saved to:\n\(url.path)"

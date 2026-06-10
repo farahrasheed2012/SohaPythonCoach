@@ -9,6 +9,7 @@ struct LessonDetailView: View {
     @State private var challengeAnswer = ""
     @State private var challengeFeedback: String?
     @State private var challengeCorrect = false
+    @State private var wrongAttempts = 0
 
     var body: some View {
         ScrollView {
@@ -106,10 +107,14 @@ struct LessonDetailView: View {
                 .disabled(challengeCorrect)
             Button("Check") {
                 let accepted = lesson.allAcceptedAnswers
-                if ChallengeValidator.isCorrect(answer: challengeAnswer, accepted: accepted) {
+                if ChallengeValidator.looksLikeCodePaste(challengeAnswer) {
+                    wrongAttempts += 1
+                    challengeFeedback = "Type the answer in your own words — don't paste starter code."
+                } else if ChallengeValidator.isCorrect(answer: challengeAnswer, accepted: accepted) {
                     challengeFeedback = "Correct!"
                     challengeCorrect = true
                 } else {
+                    wrongAttempts += 1
                     challengeFeedback = "Not quite — try again."
                 }
             }
@@ -118,7 +123,7 @@ struct LessonDetailView: View {
                 Text(challengeFeedback)
                     .foregroundStyle(challengeCorrect ? .green : .orange)
             }
-            if !challengeCorrect, let hint = lesson.challengeAnswer {
+            if !challengeCorrect, wrongAttempts >= 2, let hint = lesson.challengeAnswer {
                 Text("Hint: \(hint)")
                     .font(.caption)
                     .foregroundStyle(.secondary)

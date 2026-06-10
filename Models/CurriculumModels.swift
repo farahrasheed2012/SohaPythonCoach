@@ -34,7 +34,7 @@ struct LessonStep: Identifiable, Hashable, Codable {
     let tryItPrompt: String?
     let starterCode: String?
     let challengeQuestion: String?
-    /// Primary answer (shown in hints).
+    /// Primary accepted answer (revealed as a hint after two wrong tries).
     let challengeAnswer: String?
     /// Additional acceptable answers (case-insensitive, substring match).
     let challengeAcceptedAnswers: [String]?

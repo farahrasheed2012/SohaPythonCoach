@@ -1,7 +1,46 @@
 import Foundation
 import AppKit
 
+enum PythonSourceNormalizer {
+    /// Python only accepts straight ASCII quotes; macOS often inserts curly quotes.
+    static func normalizeQuotes(in code: String) -> String {
+        var result = code
+        let pairs: [(String, String)] = [
+            ("\u{201C}", "\""), // “
+            ("\u{201D}", "\""), // ”
+            ("\u{2018}", "'"),  // ‘
+            ("\u{2019}", "'"),  // ’
+        ]
+        for (from, to) in pairs {
+            result = result.replacingOccurrences(of: from, with: to)
+        }
+        return result
+    }
+
+    static func containsSmartQuotes(_ code: String) -> Bool {
+        code.unicodeScalars.contains { scalar in
+            switch scalar.value {
+            case 0x2018, 0x2019, 0x201C, 0x201D: true
+            default: false
+            }
+        }
+    }
+}
+
 enum PythonRunner {
+    struct PreparedSource {
+        let source: String
+        let fixedSmartQuotes: Bool
+    }
+
+    static func prepareSource(_ code: String) -> PreparedSource {
+        let normalized = PythonSourceNormalizer.normalizeQuotes(in: code)
+        return PreparedSource(
+            source: normalized,
+            fixedSmartQuotes: normalized != code
+        )
+    }
+
     enum LaunchError: LocalizedError {
         case message(String)
 
@@ -49,7 +88,7 @@ enum PythonRunner {
     static func saveScript(named filename: String, code: String) throws -> URL {
         let safe = filename.replacingOccurrences(of: " ", with: "-")
         let url = scriptsDirectory.appendingPathComponent(safe.hasSuffix(".py") ? safe : "\(safe).py")
-        try code.write(to: url, atomically: true, encoding: .utf8)
+        try prepareSource(code).source.write(to: url, atomically: true, encoding: .utf8)
         return url
     }
 
@@ -91,15 +130,16 @@ enum PythonRunner {
     }
 
     static func run(code: String, timeout: TimeInterval = 8) async -> RunResult {
-        await runFileContents(code, timeout: timeout)
+        await runFileContents(prepareSource(code).source, timeout: timeout)
     }
 
     static func runWithTests(userCode: String, tests: [CodeTest], timeout: TimeInterval = 10) async -> [TestRunResult] {
+        let prepared = prepareSource(userCode)
         var results: [TestRunResult] = []
         for test in tests {
             let combined: String
             if test.inspectSourceOnly {
-                let escaped = userCode
+                let escaped = prepared.source
                     .replacingOccurrences(of: "\\", with: "\\\\")
                     .replacingOccurrences(of: "\"", with: "\\\"")
                     .replacingOccurrences(of: "\n", with: "\\n")
@@ -110,7 +150,7 @@ enum PythonRunner {
                 """
             } else {
                 combined = """
-                \(userCode)
+                \(prepared.source)
 
                 # --- auto-check: \(test.label) ---
                 \(test.assertionScript)
