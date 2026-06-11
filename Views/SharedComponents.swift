@@ -113,21 +113,47 @@ struct CodeBlockView: View {
     }
 }
 
-/// Renders lesson body markdown (`**bold**`, `` `code` ``) instead of showing raw asterisks.
+/// Renders lesson body markdown (`**bold**`, `` `code` ``) with one line per block so lists stay readable.
 struct LessonBodyText: View {
     let text: String
 
+    private var blocks: [LessonTextFormatting.DisplayBlock] {
+        LessonTextFormatting.displayBlocks(from: text)
+    }
+
     var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ForEach(blocks) { block in
+                inlineMarkdown(block.text)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.top, topSpacing(for: block))
+            }
+        }
+    }
+
+    private func topSpacing(for block: LessonTextFormatting.DisplayBlock) -> CGFloat {
+        guard block.id > 0 else { return 0 }
+        let previous = blocks[block.id - 1]
+        switch (previous.kind, block.kind) {
+        case (.bullet, .bullet), (.numbered, .numbered):
+            return 4
+        default:
+            return 10
+        }
+    }
+
+    @ViewBuilder
+    private func inlineMarkdown(_ line: String) -> some View {
         if let attributed = try? AttributedString(
-            markdown: text,
+            markdown: line,
             options: AttributedString.MarkdownParsingOptions(
-                interpretedSyntax: .full,
+                interpretedSyntax: .inlineOnlyPreservingWhitespace,
                 failurePolicy: .returnPartiallyParsedIfPossible
             )
         ) {
             Text(attributed)
         } else {
-            Text(LessonTextFormatting.plainText(from: text))
+            Text(LessonTextFormatting.plainText(from: line))
         }
     }
 }
