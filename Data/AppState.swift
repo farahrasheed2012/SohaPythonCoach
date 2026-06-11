@@ -1,6 +1,11 @@
 import Foundation
 import Observation
 
+struct PlaygroundSnapshot: Codable, Hashable {
+    var code: String
+    var starterFingerprint: String
+}
+
 @Observable
 final class AppState {
     var completedLessons: Set<String> = []
@@ -8,10 +13,10 @@ final class AppState {
     var finalChallengeChecks: Set<String> = []
     var weekNotes: [String: String] = [:]
     var stuckItems: Set<String> = []
-    var playgroundCode: [String: String] = [:]
+    var playgroundSnapshots: [String: PlaygroundSnapshot] = [:]
     var selectedWeekID: Int = 1
     var studentName: String = "Soha"
-    private var progressSchemaVersion: Int = 2
+    private var progressSchemaVersion: Int = 3
 
     private let storageKey = "SohaPythonCoach.progress.v2"
 
@@ -35,6 +40,11 @@ final class AppState {
         return Double(completedLessonCount) / Double(totalLessons)
     }
 
+    /// Legacy export shape for progress backups.
+    var playgroundCode: [String: String] {
+        playgroundSnapshots.mapValues(\.code)
+    }
+
     func isLessonComplete(_ id: String) -> Bool {
         completedLessons.contains(id)
     }
@@ -52,12 +62,23 @@ final class AppState {
         save()
     }
 
-    func code(for contextKey: String, default defaultCode: String) -> String {
-        playgroundCode[contextKey] ?? defaultCode
+    func resolvedPlaygroundCode(
+        contextKey: String,
+        initialCode: String,
+        starterFingerprint: String
+    ) -> String {
+        if let snapshot = playgroundSnapshots[contextKey],
+           snapshot.starterFingerprint == starterFingerprint {
+            return snapshot.code
+        }
+        return initialCode
     }
 
-    func saveCode(_ code: String, for contextKey: String) {
-        playgroundCode[contextKey] = code
+    func saveCode(_ code: String, for contextKey: String, starterFingerprint: String) {
+        playgroundSnapshots[contextKey] = PlaygroundSnapshot(
+            code: code,
+            starterFingerprint: starterFingerprint
+        )
         save()
     }
 
@@ -110,7 +131,7 @@ final class AppState {
             finalChallengeChecks: Array(finalChallengeChecks),
             weekNotes: weekNotes,
             stuckItems: Array(stuckItems),
-            playgroundCode: playgroundCode,
+            playgroundSnapshots: playgroundSnapshots,
             selectedWeekID: selectedWeekID,
             studentName: studentName,
             schemaVersion: progressSchemaVersion
@@ -125,6 +146,7 @@ final class AppState {
            let payload = try? JSONDecoder().decode(StoredProgress.self, from: data) {
             apply(payload)
             migrateWeekOrderIfNeeded()
+            migratePlaygroundSnapshotsIfNeeded()
             return
         }
         // Migrate v1
@@ -138,6 +160,7 @@ final class AppState {
             studentName = legacy.studentName.isEmpty ? "Soha" : legacy.studentName
             save()
             migrateWeekOrderIfNeeded()
+            migratePlaygroundSnapshotsIfNeeded()
         }
     }
 
@@ -151,16 +174,24 @@ final class AppState {
         }
         completedLessons = remappedLessons
 
-        var remappedCode: [String: String] = [:]
-        for (key, value) in playgroundCode {
+        var remappedSnapshots: [String: PlaygroundSnapshot] = [:]
+        for (key, snapshot) in playgroundSnapshots {
             let newKey = Self.remappedLessonID(key) ?? key
-            if remappedCode[newKey] == nil {
-                remappedCode[newKey] = value
+            if remappedSnapshots[newKey] == nil {
+                remappedSnapshots[newKey] = snapshot
             }
         }
-        playgroundCode = remappedCode
+        playgroundSnapshots = remappedSnapshots
 
         progressSchemaVersion = 2
+        save()
+    }
+
+    /// Drop stale Playground autosaves that no longer match capstone scaffolds.
+    private func migratePlaygroundSnapshotsIfNeeded() {
+        guard progressSchemaVersion < 3 else { return }
+        playgroundSnapshots = [:]
+        progressSchemaVersion = 3
         save()
     }
 
@@ -177,10 +208,25 @@ final class AppState {
         finalChallengeChecks = Set(payload.finalChallengeChecks)
         weekNotes = payload.weekNotes
         stuckItems = Set(payload.stuckItems)
-        playgroundCode = payload.playgroundCode
         selectedWeekID = payload.selectedWeekID
         studentName = payload.studentName.isEmpty ? "Soha" : payload.studentName
         progressSchemaVersion = payload.schemaVersion ?? 1
+
+        if let snapshots = payload.playgroundSnapshots {
+            playgroundSnapshots = snapshots
+        } else if let legacyCode = payload.playgroundCode {
+            playgroundSnapshots = legacyCode.mapValues {
+                PlaygroundSnapshot(code: $0, starterFingerprint: "")
+            }
+        } else {
+            playgroundSnapshots = [:]
+        }
+    }
+
+    func importPlaygroundCodeFromBackup(_ code: [String: String]) {
+        playgroundSnapshots = code.mapValues {
+            PlaygroundSnapshot(code: $0, starterFingerprint: "")
+        }
     }
 }
 
@@ -190,7 +236,8 @@ private struct StoredProgress: Codable {
     var finalChallengeChecks: [String]
     var weekNotes: [String: String]
     var stuckItems: [String]
-    var playgroundCode: [String: String]
+    var playgroundSnapshots: [String: PlaygroundSnapshot]?
+    var playgroundCode: [String: String]?
     var selectedWeekID: Int
     var studentName: String
     var schemaVersion: Int?

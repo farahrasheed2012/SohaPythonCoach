@@ -7,6 +7,7 @@ struct PlaygroundView: View {
     var initialCode: String = "print(\"Hello, Soha!\")"
     var title: String = "Playground"
     var contextKey: String = PlaygroundContext.playground
+    var starterFingerprint: String = PlaygroundContext.starterFingerprint(starter: "print(\"Hello, Soha!\")")
     var scriptFilename: String = "soha_playground.py"
     var codeTests: [CodeTest] = []
     /// When set, prepends this block if saved Playground code lacks lesson comments.
@@ -39,9 +40,12 @@ struct PlaygroundView: View {
         }
         .coachPageBackground()
         .navigationTitle("Playground")
-        .onAppear { loadCode() }
+        .onAppear { reloadCode() }
+        .onChange(of: contextKey) { _, _ in reloadCode() }
+        .onChange(of: initialCode) { _, _ in reloadCode() }
+        .onChange(of: starterFingerprint) { _, _ in reloadCode() }
         .onChange(of: code) { _, newValue in
-            appState.saveCode(newValue, for: contextKey)
+            appState.saveCode(newValue, for: contextKey, starterFingerprint: starterFingerprint)
         }
     }
 
@@ -69,7 +73,7 @@ struct PlaygroundView: View {
                 code = initialCode
                 output = ""
                 testResults = []
-                appState.saveCode(initialCode, for: contextKey)
+                appState.saveCode(initialCode, for: contextKey, starterFingerprint: starterFingerprint)
             }
             if !codeTests.isEmpty {
                 Button("Run tests") {
@@ -194,14 +198,16 @@ struct PlaygroundView: View {
         .padding(.bottom, 12)
     }
 
-    private func loadCode() {
-        if code.isEmpty {
-            let saved = appState.code(for: contextKey, default: initialCode)
-            if let header = lessonCommentHeader, !header.isEmpty {
-                code = PlaygroundContext.mergeLessonCommentHeader(into: saved, header: header)
-            } else {
-                code = saved
-            }
+    private func reloadCode() {
+        let saved = appState.resolvedPlaygroundCode(
+            contextKey: contextKey,
+            initialCode: initialCode,
+            starterFingerprint: starterFingerprint
+        )
+        if let header = lessonCommentHeader, !header.isEmpty {
+            code = PlaygroundContext.mergeLessonCommentHeader(into: saved, header: header)
+        } else {
+            code = saved
         }
     }
 

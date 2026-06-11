@@ -146,6 +146,7 @@ struct LessonDetailView: View {
                 ),
                 title: lesson.title,
                 contextKey: PlaygroundContext.lesson(lesson.id),
+                starterFingerprint: PlaygroundContext.starterFingerprint(starter: starterCode),
                 scriptFilename: "\(lesson.id).py",
                 codeTests: lesson.codeTests ?? [],
                 lessonCommentHeader: PlaygroundContext.lessonCommentHeader(
@@ -154,6 +155,7 @@ struct LessonDetailView: View {
                     challengeQuestion: lesson.challengeQuestion
                 )
             )
+            .id(lesson.id)
         } label: {
             Label("Open in Playground", systemImage: "terminal")
         }

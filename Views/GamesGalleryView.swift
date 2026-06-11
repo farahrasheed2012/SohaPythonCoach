@@ -97,9 +97,11 @@ struct GameDetailView: View {
                             initialCode: game.starterCode,
                             title: game.title,
                             contextKey: PlaygroundContext.game(game.id),
+                            starterFingerprint: PlaygroundContext.starterFingerprint(starter: game.starterCode),
                             scriptFilename: "\(game.id).py",
                             codeTests: game.codeTests ?? []
                         )
+                        .id(game.id)
                     } label: {
                         Label("Run in Playground", systemImage: "play.fill")
                     }

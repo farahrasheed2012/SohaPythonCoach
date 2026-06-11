@@ -56,9 +56,11 @@ struct FinalChallengeView: View {
                                 initialCode: finalGame.starterCode,
                                 title: "Final Challenge",
                                 contextKey: PlaygroundContext.game(finalGame.id),
+                                starterFingerprint: PlaygroundContext.starterFingerprint(starter: finalGame.starterCode),
                                 scriptFilename: "final-challenge.py",
                                 codeTests: finalGame.codeTests ?? []
                             )
+                            .id(finalGame.id)
                         } label: {
                             Label("Run in Playground", systemImage: "terminal")
                         }

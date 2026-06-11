@@ -149,7 +149,7 @@ enum PlaygroundContext {
     static func game(_ id: String) -> String { "game:\(id)" }
     static let playground = "playground:main"
 
-    /// Prepends lesson prompt + optional quick-check as `#` comments above starter code.
+    /// Prepends lesson prompt + quick-check as a Doxygen-style docstring above starter code.
     static func lessonPlaygroundCode(
         starter: String?,
         lessonTitle: String?,
@@ -157,44 +157,106 @@ enum PlaygroundContext {
         challengeQuestion: String?
     ) -> String {
         let body = starter?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        var headerParts: [String] = []
+        let docstring = lessonDocstringBlock(
+            lessonTitle: lessonTitle,
+            lessonBody: lessonBody,
+            challengeQuestion: challengeQuestion
+        )
+        let header = docstring.map { $0 + "\n\n" } ?? ""
 
-        if let title = lessonTitle?.trimmingCharacters(in: .whitespacesAndNewlines), !title.isEmpty {
-            headerParts.append("# \(title)")
-        }
-        if let lessonText = lessonBody?.trimmingCharacters(in: .whitespacesAndNewlines), !lessonText.isEmpty {
-            headerParts.append(contentsOf: pythonCommentLines(LessonTextFormatting.plainText(from: lessonText)))
-        }
-        if let question = challengeQuestion?.trimmingCharacters(in: .whitespacesAndNewlines), !question.isEmpty {
-            if !headerParts.isEmpty { headerParts.append("#") }
-            headerParts.append("# Quick check")
-            headerParts.append(contentsOf: pythonCommentLines(question))
-        }
-
-        let header = headerParts.isEmpty ? "" : headerParts.joined(separator: "\n") + "\n\n"
         if body.isEmpty {
-            return header + (headerParts.isEmpty ? "print(\"Hello, Soha!\")" : "# Try your answer here:\n")
+            if header.isEmpty {
+                return "print(\"Hello, Soha!\")"
+            }
+            return header + "# Try your answer here:\n"
         }
         return header + (starter ?? body)
     }
 
-    /// Lines to paste at top of Playground when opening a lesson (title + body + quick check).
+    /// Docstring-only prefix for merging into saved Playground code.
     static func lessonCommentHeader(
         lessonTitle: String?,
         lessonBody: String?,
         challengeQuestion: String?
     ) -> String {
-        let full = lessonPlaygroundCode(
-            starter: "",
+        guard let docstring = lessonDocstringBlock(
             lessonTitle: lessonTitle,
             lessonBody: lessonBody,
             challengeQuestion: challengeQuestion
-        )
-        return commentHeaderPrefix(in: full) ?? ""
+        ) else { return "" }
+        return docstring + "\n\n"
     }
 
-    /// Comment-only prefix at the top of lesson Playground code (through first blank line after `#` lines).
+    /// Leading docstring or legacy `#` comment block before executable code.
     static func commentHeaderPrefix(in code: String) -> String? {
+        if let docstring = docstringHeaderPrefix(in: code) {
+            return docstring
+        }
+        return hashCommentHeaderPrefix(in: code)
+    }
+
+    /// If saved Playground code is missing the lesson docstring, prepend or replace a legacy `#` header.
+    static func mergeLessonCommentHeader(into saved: String, header: String) -> String {
+        guard !header.isEmpty else { return saved }
+        if saved.hasPrefix(header) { return saved }
+        if saved.contains("@question") { return saved }
+
+        if let existing = commentHeaderPrefix(in: saved), !existing.isEmpty {
+            let remainder = saved.dropFirst(existing.count)
+            return header + remainder
+        }
+        return header + saved
+    }
+
+    private static func lessonDocstringBlock(
+        lessonTitle: String?,
+        lessonBody: String?,
+        challengeQuestion: String?
+    ) -> String? {
+        var lines: [String] = []
+
+        if let title = lessonTitle?.trimmingCharacters(in: .whitespacesAndNewlines), !title.isEmpty {
+            lines.append("@title \(title)")
+            lines.append("")
+        }
+        if let lessonText = lessonBody?.trimmingCharacters(in: .whitespacesAndNewlines), !lessonText.isEmpty {
+            lines.append(contentsOf: LessonTextFormatting.plainText(from: lessonText)
+                .split(separator: "\n", omittingEmptySubsequences: false)
+                .map(String.init))
+            lines.append("")
+        }
+        if let question = challengeQuestion?.trimmingCharacters(in: .whitespacesAndNewlines), !question.isEmpty {
+            lines.append("@question \(question)")
+        }
+
+        while lines.last == "" {
+            lines.removeLast()
+        }
+        guard !lines.isEmpty else { return nil }
+
+        return "\"\"\"\n" + lines.joined(separator: "\n") + "\n\"\"\""
+    }
+
+    private static func docstringHeaderPrefix(in code: String) -> String? {
+        guard code.hasPrefix("\"\"\"") else { return nil }
+        let searchStart = code.index(code.startIndex, offsetBy: 3)
+        guard searchStart < code.endIndex,
+              let close = code.range(of: "\"\"\"", range: searchStart..<code.endIndex) else {
+            return nil
+        }
+
+        var end = close.upperBound
+        while end < code.endIndex, code[end].isNewline {
+            end = code.index(after: end)
+        }
+        var prefix = String(code[..<end])
+        if end < code.endIndex {
+            prefix += "\n"
+        }
+        return prefix
+    }
+
+    private static func hashCommentHeaderPrefix(in code: String) -> String? {
         var lines: [String] = []
         var seenComment = false
         for line in code.split(separator: "\n", omittingEmptySubsequences: false) {
@@ -218,20 +280,15 @@ enum PlaygroundContext {
         return seenComment ? lines.joined(separator: "\n") + "\n" : nil
     }
 
-    /// If saved Playground code is missing the lesson comment block, prepend it.
-    static func mergeLessonCommentHeader(into saved: String, header: String) -> String {
-        guard !header.isEmpty else { return saved }
-        if saved.hasPrefix(header) { return saved }
-        if let existing = commentHeaderPrefix(in: saved), !existing.isEmpty { return saved }
-        return header + saved
-    }
-
-    private static func pythonCommentLines(_ text: String) -> [String] {
-        text
-            .split(separator: "\n", omittingEmptySubsequences: false)
-            .map { line in
-                line.isEmpty ? "#" : "# \(line)"
-            }
+    /// Stable hash of the lesson scaffold — used to discard stale Playground autosaves when starters change.
+    static func starterFingerprint(starter: String?) -> String {
+        let normalized = (starter ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !normalized.isEmpty else { return "empty" }
+        var hash: UInt64 = 5381
+        for byte in normalized.utf8 {
+            hash = ((hash << 5) &+ hash) &+ UInt64(byte)
+        }
+        return String(hash, radix: 16)
     }
 }
 

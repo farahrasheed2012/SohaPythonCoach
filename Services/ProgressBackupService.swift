@@ -82,7 +82,7 @@ enum ProgressBackupService {
         appState.finalChallengeChecks = Set(backup.finalChallengeChecks)
         appState.weekNotes = backup.weekNotes
         appState.stuckItems = Set(backup.stuckItems)
-        appState.playgroundCode = backup.playgroundCode
+        appState.importPlaygroundCodeFromBackup(backup.playgroundCode)
         appState.selectedWeekID = backup.selectedWeekID
         appState.save()
     }
