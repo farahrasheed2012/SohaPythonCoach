@@ -163,7 +163,7 @@ enum PlaygroundContext {
             headerParts.append("# \(title)")
         }
         if let lessonText = lessonBody?.trimmingCharacters(in: .whitespacesAndNewlines), !lessonText.isEmpty {
-            headerParts.append(contentsOf: pythonCommentLines(lessonText))
+            headerParts.append(contentsOf: pythonCommentLines(LessonTextFormatting.plainText(from: lessonText)))
         }
         if let question = challengeQuestion?.trimmingCharacters(in: .whitespacesAndNewlines), !question.isEmpty {
             if !headerParts.isEmpty { headerParts.append("#") }

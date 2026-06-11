@@ -18,10 +18,10 @@ struct LessonDetailView: View {
 
                 Card(title: lesson.title, subtitle: lessonSubtitle, accent: .purple) {
                     HStack(alignment: .top, spacing: 12) {
-                        Text(lesson.body)
+                        LessonBodyText(text: lesson.body)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         Button("Copy") {
-                            ClipboardHelper.copy(lesson.body)
+                            ClipboardHelper.copy(LessonTextFormatting.plainText(from: lesson.body))
                         }
                         .controlSize(.small)
                     }

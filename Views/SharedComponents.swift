@@ -113,6 +113,25 @@ struct CodeBlockView: View {
     }
 }
 
+/// Renders lesson body markdown (`**bold**`, `` `code` ``) instead of showing raw asterisks.
+struct LessonBodyText: View {
+    let text: String
+
+    var body: some View {
+        if let attributed = try? AttributedString(
+            markdown: text,
+            options: AttributedString.MarkdownParsingOptions(
+                interpretedSyntax: .full,
+                failurePolicy: .returnPartiallyParsedIfPossible
+            )
+        ) {
+            Text(attributed)
+        } else {
+            Text(LessonTextFormatting.plainText(from: text))
+        }
+    }
+}
+
 struct ProgressRing: View {
     let fraction: Double
     var label: String

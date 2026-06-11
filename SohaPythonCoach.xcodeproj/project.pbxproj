@@ -27,6 +27,7 @@
 		A10000000000000000000019 /* python-coach-teacher-script.html in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000019 /* python-coach-teacher-script.html */; };
 		A10000000000000000000020 /* SessionTeachingLessons.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000020 /* SessionTeachingLessons.swift */; };
 		A10000000000000000000021 /* SessionScaffolds.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000021 /* SessionScaffolds.swift */; };
+		A10000000000000000000022 /* LessonTextFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000022 /* LessonTextFormatting.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +53,7 @@
 		B10000000000000000000019 /* python-coach-teacher-script.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = Resources/Printable/python-coach-teacher-script.html; sourceTree = "<group>"; };
 		B10000000000000000000020 /* SessionTeachingLessons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data/SessionTeachingLessons.swift; sourceTree = "<group>"; };
 		B10000000000000000000021 /* SessionScaffolds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data/SessionScaffolds.swift; sourceTree = "<group>"; };
+		B10000000000000000000022 /* LessonTextFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/LessonTextFormatting.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +83,7 @@
 			children = (
 				B10000000000000000000001 /* SohaPythonCoachApp.swift */,
 				B10000000000000000000002 /* CurriculumModels.swift */,
+				B10000000000000000000022 /* LessonTextFormatting.swift */,
 				B10000000000000000000003 /* AppState.swift */,
 				B10000000000000000000004 /* CurriculumSeed.swift */,
 				B10000000000000000000020 /* SessionTeachingLessons.swift */,
@@ -162,6 +165,7 @@
 			files = (
 				A10000000000000000000001 /* SohaPythonCoachApp.swift in Sources */,
 				A10000000000000000000002 /* CurriculumModels.swift in Sources */,
+				A10000000000000000000022 /* LessonTextFormatting.swift in Sources */,
 				A10000000000000000000003 /* AppState.swift in Sources */,
 				A10000000000000000000004 /* CurriculumSeed.swift in Sources */,
 				A10000000000000000000020 /* SessionTeachingLessons.swift in Sources */,

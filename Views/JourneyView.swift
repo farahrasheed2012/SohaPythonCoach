@@ -169,7 +169,7 @@ struct WeekDetailView: View {
                                             .foregroundStyle(.orange)
                                     }
                                 }
-                                Text(lesson.body)
+                                Text(LessonTextFormatting.plainText(from: lesson.body))
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                                     .lineLimit(2)

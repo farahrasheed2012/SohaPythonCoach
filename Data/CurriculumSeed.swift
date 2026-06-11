@@ -404,7 +404,7 @@ assert "time_left" in user_code or "timer" in user_code.lower()
         sessionTitlePrefix: String = "Session"
     ) -> LessonStep {
         let capstoneBody = """
-**Session capstone** — complete the lessons above in this week first, then finish the project below in Playground.
+Session capstone — complete the lessons above in this week first, then finish the project below in Playground.
 
 \(body)
 """
