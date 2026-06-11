@@ -9,6 +9,8 @@ struct PlaygroundView: View {
     var contextKey: String = PlaygroundContext.playground
     var scriptFilename: String = "soha_playground.py"
     var codeTests: [CodeTest] = []
+    /// When set, prepends this block if saved Playground code lacks lesson comments.
+    var lessonCommentHeader: String? = nil
 
     @State private var code: String = ""
     @State private var output = ""
@@ -194,7 +196,12 @@ struct PlaygroundView: View {
 
     private func loadCode() {
         if code.isEmpty {
-            code = appState.code(for: contextKey, default: initialCode)
+            let saved = appState.code(for: contextKey, default: initialCode)
+            if let header = lessonCommentHeader, !header.isEmpty {
+                code = PlaygroundContext.mergeLessonCommentHeader(into: saved, header: header)
+            } else {
+                code = saved
+            }
         }
     }
 

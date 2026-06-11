@@ -148,6 +148,91 @@ enum PlaygroundContext {
     static func lesson(_ id: String) -> String { "lesson:\(id)" }
     static func game(_ id: String) -> String { "game:\(id)" }
     static let playground = "playground:main"
+
+    /// Prepends lesson prompt + optional quick-check as `#` comments above starter code.
+    static func lessonPlaygroundCode(
+        starter: String?,
+        lessonTitle: String?,
+        lessonBody: String?,
+        challengeQuestion: String?
+    ) -> String {
+        let body = starter?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        var headerParts: [String] = []
+
+        if let title = lessonTitle?.trimmingCharacters(in: .whitespacesAndNewlines), !title.isEmpty {
+            headerParts.append("# \(title)")
+        }
+        if let lessonText = lessonBody?.trimmingCharacters(in: .whitespacesAndNewlines), !lessonText.isEmpty {
+            headerParts.append(contentsOf: pythonCommentLines(lessonText))
+        }
+        if let question = challengeQuestion?.trimmingCharacters(in: .whitespacesAndNewlines), !question.isEmpty {
+            if !headerParts.isEmpty { headerParts.append("#") }
+            headerParts.append("# Quick check")
+            headerParts.append(contentsOf: pythonCommentLines(question))
+        }
+
+        let header = headerParts.isEmpty ? "" : headerParts.joined(separator: "\n") + "\n\n"
+        if body.isEmpty {
+            return header + (headerParts.isEmpty ? "print(\"Hello, Soha!\")" : "# Try your answer here:\n")
+        }
+        return header + (starter ?? body)
+    }
+
+    /// Lines to paste at top of Playground when opening a lesson (title + body + quick check).
+    static func lessonCommentHeader(
+        lessonTitle: String?,
+        lessonBody: String?,
+        challengeQuestion: String?
+    ) -> String {
+        let full = lessonPlaygroundCode(
+            starter: "",
+            lessonTitle: lessonTitle,
+            lessonBody: lessonBody,
+            challengeQuestion: challengeQuestion
+        )
+        return commentHeaderPrefix(in: full) ?? ""
+    }
+
+    /// Comment-only prefix at the top of lesson Playground code (through first blank line after `#` lines).
+    static func commentHeaderPrefix(in code: String) -> String? {
+        var lines: [String] = []
+        var seenComment = false
+        for line in code.split(separator: "\n", omittingEmptySubsequences: false) {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            if trimmed.isEmpty {
+                if seenComment {
+                    lines.append("")
+                    return lines.joined(separator: "\n") + "\n"
+                }
+                continue
+            }
+            if trimmed.hasPrefix("#") {
+                seenComment = true
+                lines.append(String(line))
+            } else if seenComment {
+                return lines.joined(separator: "\n") + "\n"
+            } else {
+                return nil
+            }
+        }
+        return seenComment ? lines.joined(separator: "\n") + "\n" : nil
+    }
+
+    /// If saved Playground code is missing the lesson comment block, prepend it.
+    static func mergeLessonCommentHeader(into saved: String, header: String) -> String {
+        guard !header.isEmpty else { return saved }
+        if saved.hasPrefix(header) { return saved }
+        if let existing = commentHeaderPrefix(in: saved), !existing.isEmpty { return saved }
+        return header + saved
+    }
+
+    private static func pythonCommentLines(_ text: String) -> [String] {
+        text
+            .split(separator: "\n", omittingEmptySubsequences: false)
+            .map { line in
+                line.isEmpty ? "#" : "# \(line)"
+            }
+    }
 }
 
 enum AppTab: String, CaseIterable, Identifiable {

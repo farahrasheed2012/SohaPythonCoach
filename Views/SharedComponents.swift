@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 struct PythonCodeEditor: NSViewRepresentable {
     @Binding var text: String
@@ -154,5 +155,12 @@ struct SkillPill: View {
 extension View {
     func coachPageBackground() -> some View {
         background(Color(nsColor: .windowBackgroundColor))
+    }
+}
+
+enum ClipboardHelper {
+    static func copy(_ text: String) {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(text, forType: .string)
     }
 }

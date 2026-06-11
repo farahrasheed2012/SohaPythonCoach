@@ -17,7 +17,14 @@ struct LessonDetailView: View {
                 headerRow
 
                 Card(title: lesson.title, subtitle: lessonSubtitle, accent: .purple) {
-                    Text(lesson.body)
+                    HStack(alignment: .top, spacing: 12) {
+                        Text(lesson.body)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Button("Copy") {
+                            ClipboardHelper.copy(lesson.body)
+                        }
+                        .controlSize(.small)
+                    }
                 }
 
                 Card(title: "Teacher script", subtitle: "Words for parent/coach", accent: .orange) {
@@ -34,21 +41,9 @@ struct LessonDetailView: View {
                 if let code = lesson.starterCode {
                     Card(title: "Starter code", accent: .green) {
                         CodeBlockView(code: code) {
-                            NSPasteboard.general.clearContents()
-                            NSPasteboard.general.setString(code, forType: .string)
+                            ClipboardHelper.copy(code)
                         }
-                        NavigationLink {
-                            PlaygroundView(
-                                initialCode: code,
-                                title: lesson.title,
-                                contextKey: PlaygroundContext.lesson(lesson.id),
-                                scriptFilename: "\(lesson.id).py",
-                                codeTests: lesson.codeTests ?? []
-                            )
-                        } label: {
-                            Label("Open in Playground", systemImage: "terminal")
-                        }
-                        .buttonStyle(.borderedProminent)
+                        playgroundLink(starterCode: code)
                     }
                 }
 
@@ -100,7 +95,14 @@ struct LessonDetailView: View {
 
     private func challengeCard(question: String) -> some View {
         Card(title: "Quick check", accent: .cyan) {
-            Text(question)
+            HStack(alignment: .top, spacing: 12) {
+                Text(question)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Button("Copy") {
+                    ClipboardHelper.copy(question)
+                }
+                .controlSize(.small)
+            }
             TextField("Your answer", text: $challengeAnswer)
                 .textFieldStyle(.roundedBorder)
                 .disabled(challengeCorrect)
@@ -118,6 +120,9 @@ struct LessonDetailView: View {
                 }
             }
             .disabled(challengeCorrect)
+            if lesson.starterCode == nil {
+                playgroundLink(starterCode: nil)
+            }
             if let challengeFeedback {
                 Text(challengeFeedback)
                     .foregroundStyle(challengeCorrect ? .green : .orange)
@@ -128,6 +133,31 @@ struct LessonDetailView: View {
                     .foregroundStyle(.secondary)
             }
         }
+    }
+
+    private func playgroundLink(starterCode: String?) -> some View {
+        NavigationLink {
+            PlaygroundView(
+                initialCode: PlaygroundContext.lessonPlaygroundCode(
+                    starter: starterCode,
+                    lessonTitle: lesson.title,
+                    lessonBody: lesson.body,
+                    challengeQuestion: lesson.challengeQuestion
+                ),
+                title: lesson.title,
+                contextKey: PlaygroundContext.lesson(lesson.id),
+                scriptFilename: "\(lesson.id).py",
+                codeTests: lesson.codeTests ?? [],
+                lessonCommentHeader: PlaygroundContext.lessonCommentHeader(
+                    lessonTitle: lesson.title,
+                    lessonBody: lesson.body,
+                    challengeQuestion: lesson.challengeQuestion
+                )
+            )
+        } label: {
+            Label("Open in Playground", systemImage: "terminal")
+        }
+        .buttonStyle(.borderedProminent)
     }
 
     private var canMarkComplete: Bool {
