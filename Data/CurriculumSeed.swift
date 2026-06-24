@@ -362,8 +362,9 @@ assert "time_left" in user_code or "timer" in user_code.lower()
         title: String,
         body: String,
         teacherScript: String,
-        starterCode: String,
         tryItPrompt: String? = nil,
+        practiceSteps: [String]? = nil,
+        starterCode: String,
         challengeQuestion: String? = nil,
         challengeAnswer: String? = nil,
         challengeAcceptedAnswers: [String]? = nil,
@@ -375,6 +376,7 @@ assert "time_left" in user_code or "timer" in user_code.lower()
             body: body,
             teacherScript: teacherScript,
             tryItPrompt: tryItPrompt,
+            practiceSteps: practiceSteps,
             starterCode: starterCode,
             challengeQuestion: challengeQuestion,
             challengeAnswer: challengeAnswer,
@@ -396,6 +398,7 @@ assert "time_left" in user_code or "timer" in user_code.lower()
         body: String,
         teacherScript: String,
         tryItPrompt: String? = nil,
+        practiceSteps: [String]? = nil,
         starterCode: String? = nil,
         challengeQuestion: String? = nil,
         challengeAnswer: String? = nil,
@@ -408,20 +411,43 @@ Session capstone — complete the lessons above in this week first, then finish 
 
 \(body)
 """
+        let defaultSteps = [
+            "Complete all teach lessons in this week first.",
+            "Read the Session capstone checklist in Learn.",
+            "Open Playground and fill each TODO in the scaffold.",
+            "Run often — fix one error at a time.",
+            "Run auto-checks, then mark complete.",
+        ]
+        let resolvedTests = codeTests ?? defaultCapstoneCodeTests(week: week, starterCode: starterCode)
         return LessonStep(
             id: "w\(week)-live",
             title: "\(sessionTitlePrefix) \(sessionNumber): \(title)",
             body: capstoneBody,
             teacherScript: teacherScript,
             tryItPrompt: tryItPrompt,
+            practiceSteps: practiceSteps ?? defaultSteps,
             starterCode: starterCode,
             challengeQuestion: challengeQuestion,
             challengeAnswer: challengeAnswer,
             challengeAcceptedAnswers: challengeAcceptedAnswers,
-            codeTests: codeTests,
+            codeTests: resolvedTests,
             format: .selfPaced,
             durationMinutes: 30
         )
+    }
+
+    private static func defaultCapstoneCodeTests(week: Int, starterCode: String?) -> [CodeTest]? {
+        guard let code = starterCode, code.contains("TODO") else { return nil }
+        return [
+            CodeTest(
+                id: "w\(week)-live-todo",
+                label: "Completed capstone TODOs",
+                assertionScript: """
+assert user_code.count("TODO") < 3
+""",
+                inspectSourceOnly: true
+            ),
+        ]
     }
 
     private static let live1 = sessionLesson(
@@ -977,21 +1003,7 @@ Present your data-science or ML project: demonstrate what you built, explain one
 """,
         teacherScript: "2-minute demo max. Backup: screen recording if demo fails. Export progress JSON before presenting.",
         tryItPrompt: "Rehearse: intro · demo · one challenge you overcame · thank you.",
-        starterCode: """
-print("=== Course 2 Presentation Checklist ===")
-print("[ ] Weather app OR graph project OR music ML model")
-print("[ ] 2-minute demo rehearsed")
-print("[ ] Explain one bug you fixed")
-print("[ ] Peer feedback notes ready")
-print()
-print("Course 2 skills unlocked:")
-print("· Error handling & Caesar cipher")
-print("· Classes & OOP")
-print("· APIs & Weather app")
-print("· Pandas, NumPy, Matplotlib")
-print("· Lambda, *args, **kwargs")
-print("· Scikit-learn ML")
-""",
+        starterCode: SessionScaffolds.week11,
         challengeQuestion: "How many Level 2 sessions did you complete?",
         challengeAnswer: "10",
         challengeAcceptedAnswers: ["ten"]
@@ -1162,22 +1174,7 @@ Design your own Level 3 capstone: extend the text editor, Tic-Tac-Toe, cipher ap
 Present your Level 3 final project. Play review games, celebrate GUI and recursion skills, and prepare for Level 4 — paradigms, algorithms, and professional projects.
 """,
         teacherScript: "2-minute demo. Export progress backup. Preview Level 4 calculator + adventure game topics.",
-        starterCode: """
-print("=== Level 3 Graduation Checklist ===")
-print("[ ] Text editor OR Tic-Tac-Toe OR cipher app OR organizer")
-print("[ ] Uses Tkinter, files, or recursion")
-print("[ ] 2-minute demo rehearsed")
-print("[ ] Progress exported from Python Coach")
-print()
-print("Level 3 skills unlocked:")
-print("· Tkinter GUIs")
-print("· File I/O & JSON")
-print("· Recursion & os module")
-print("· APIs & data persistence")
-print("· OOP project structure")
-print()
-print("Next up: Level 4 (weeks 31–40)")
-""",
+        starterCode: SessionScaffolds.week21,
         challengeQuestion: "What level comes after Level 3 in the app journey?",
         challengeAnswer: "Level 4",
         challengeAcceptedAnswers: ["level 4", "L4", "weeks 31"]
@@ -1380,19 +1377,7 @@ Finalize your project and deliver a professional presentation. Code documentatio
 """,
         teacherScript: "Celebrate! Export Python Coach progress. Screenshot all 7 portfolio pieces + final project folder.",
         tryItPrompt: "Progress tab → Export progress JSON.",
-        starterCode: """
-print("=== Level 4 Graduation ===")
-print("Portfolio completed:")
-print("  1. Multi-paradigm Calculator")
-print("  2. Text Adventure Game")
-print("  3. Algorithm Visualizer")
-print("  4. Pathfinding Game")
-print("  5. Weather Prediction ML")
-print("  6. Custom GUI Application")
-print("  7. Final Project (your choice)")
-print()
-print("Next step: AI and Machine Learning Level 1 (deeper projects)")
-""",
+        starterCode: SessionScaffolds.week41,
         challengeQuestion: "What topic is recommended after completing Level 4?",
         challengeAnswer: "AI and Machine Learning Level 1",
         challengeAcceptedAnswers: ["ML Level 1", "AI ML Level 1", "machine learning", "AI ML"]
@@ -1537,21 +1522,7 @@ Finalize your capstone project and deliver a professional presentation. Learn co
 """,
         teacherScript: "2–3 minute demo. Show README or docstring. Q&A practice: 'What was hardest?' 'What would you add next?'",
         tryItPrompt: "Add a README.md to your project folder with install + run instructions.",
-        starterCode: """
-print("=== Professional Presentation Checklist ===")
-print("[ ] Project runs from clean Terminal test")
-print("[ ] README: what it does, how to run, pip installs")
-print("[ ] Docstrings on main functions/classes")
-print("[ ] 2–3 minute demo script rehearsed")
-print("[ ] Backup screen recording ready")
-print("[ ] Code pushed or exported (Progress backup)")
-print()
-print("Demo structure:")
-print("  1. Hook — what problem does it solve?")
-print("  2. Live demo — happy path")
-print("  3. One technical highlight you learned")
-print("  4. Thank you + questions")
-""",
+        starterCode: SessionScaffolds.week31,
         challengeQuestion: "Name one professional skill practiced this week.",
         challengeAnswer: "documentation",
         challengeAcceptedAnswers: ["presentation", "demo", "code review", "readme"]
@@ -1571,6 +1542,13 @@ print("  4. Thank you + questions")
                 body: "Python is a language you type — like giving the computer a recipe. You write code in a file, run it, and see results instantly.",
                 teacherScript: "Today we're programmers. Python is how we tell the Mac what to do. No magic — just clear instructions.",
                 tryItPrompt: "Open Terminal and type: python3 --version",
+                practiceSteps: [
+                    "Read Learn — study the example for \"What is Python?\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Open Terminal and type: python3 --version",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: "print(\"Hello, Soha!\")\nprint(\"I am learning Python!\")",
                 challengeQuestion: "What function shows text on the screen?",
                 challengeAnswer: "print",
@@ -1590,11 +1568,20 @@ print("  4. Thank you + questions")
                 body: "A variable stores a value. name = \"Soha\" puts the text Soha in a box labeled name.",
                 teacherScript: "Think of variables as sticky notes on boxes. The label is the variable name; what's inside is the value.",
                 tryItPrompt: nil,
+                practiceSteps: [
+                    "Read Learn — study the example for \"Variables = labeled boxes\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 name = "Soha"
 age = 12
 print(name)
-print("Next year:", age + 1)
+# YOUR TURN: print("Next year:", age + 1)
 """,
                 challengeQuestion: "If score = 10 and you run score = score + 5, what is score?",
                 challengeAnswer: "15",
@@ -1626,13 +1613,23 @@ assert score == 15
                 body: "Combine print and variables to make a short bio program.",
                 teacherScript: "Let's build something that's yours — not a copy from a worksheet.",
                 tryItPrompt: "Add your favorite subject and hobby.",
+                practiceSteps: [
+                    "Read Learn — study the example for \"Mini project: About Me\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Add your favorite subject and hobby.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 print("=== About Me ===")
 name = "Soha"
 grade = 7
 print("Name:", name)
 print("Grade:", grade)
-print("Favorite color: blue")
+# YOUR TURN: print("Favorite color: blue")
 """,
                 challengeQuestion: nil,
                 challengeAnswer: nil
@@ -1651,12 +1648,22 @@ Use straight double quotes `"` in Python, not curly “smart quotes” from Word
 """,
                 teacherScript: "Have Soha predict the output before each Run. Fix one line together if quotes cause an error.",
                 tryItPrompt: "Print: Soha loves Science Bowl — using variables for name and hobby.",
+                practiceSteps: [
+                    "Read Learn — study the example for \"Combining text\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Print: Soha loves Science Bowl — using variables for name and hobby.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 name = "Soha"
 hobby = "Science Bowl"
 print("Hi,", name)
 print("I love " + hobby)
-print(name, "is learning Python!")
+# YOUR TURN: print(name, "is learning Python!")
 """,
                 challengeQuestion: "Which print style adds spaces for you: commas or plus?",
                 challengeAnswer: "commas",
@@ -1692,9 +1699,18 @@ assert "hobby" in user_code or "Science" in user_code
                 body: "input() waits for keyboard text. Wrap with int() when you need a number.",
                 teacherScript: "Before, programs only talked. Now they listen.",
                 tryItPrompt: nil,
+                practiceSteps: [
+                    "Read Learn — study the example for \"Ask the user\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 name = input("What is your name? ")
-print("Hi", name + "!")
+# YOUR TURN: print("Hi", name + "!")
 """,
                 challengeQuestion: "Which function reads text from the user?",
                 challengeAnswer: "input",
@@ -1706,14 +1722,23 @@ print("Hi", name + "!")
                 body: "Run different code depending on a condition. Use == to compare, not =.",
                 teacherScript: "If the condition is True, do this block. Otherwise, do that block.",
                 tryItPrompt: nil,
+                practiceSteps: [
+                    "Read Learn — study the example for \"if / else\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 score = int(input("Quiz score (0-100): "))
 if score >= 90:
     print("A — amazing!")
 elif score >= 80:
     print("B — great job!")
 else:
-    print("Keep practicing — you got this!")
+    # YOUR TURN: print("Keep practicing — you got this!")
 """,
                 challengeQuestion: "Which symbol checks equality?",
                 challengeAnswer: "==",
@@ -1725,12 +1750,22 @@ else:
                 body: "Only print the secret message if the password matches.",
                 teacherScript: "Real apps use this idea — checking before showing something.",
                 tryItPrompt: "Add a second wrong-try message.",
+                practiceSteps: [
+                    "Read Learn — study the example for \"Mini project: Password Gate\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Add a second wrong-try message.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 password = input("Enter password: ")
 if password == "python":
     print("Access granted!")
 else:
-    print("Wrong password.")
+    # YOUR TURN: print("Wrong password.")
 """,
                 challengeQuestion: nil,
                 challengeAnswer: nil
@@ -1747,12 +1782,22 @@ Use `menu["cheese"]` to look up a price. Use `.append()` to add to a list.
 """,
                 teacherScript: "Build the menu dict together before the Pizza project.",
                 tryItPrompt: "Add a veggie pizza for $9.",
+                practiceSteps: [
+                    "Read Learn — study the example for \"Lists & dictionaries\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Add a veggie pizza for $9.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 menu = {"cheese": 8, "pepperoni": 10}
 order = []
 order.append("cheese")
 print("Order:", order)
-print("Price:", menu[order[0]])
+# YOUR TURN: print("Price:", menu[order[0]])
 """,
                 challengeQuestion: "Which type maps a name to a price?",
                 challengeAnswer: "dictionary",
@@ -1770,12 +1815,21 @@ Pattern for a menu:
 3. Otherwise handle the choice
 """,
                 teacherScript: "Trace one loop by hand: what happens when user types done?",
+                practiceSteps: [
+                    "Read Learn — study the example for \"while loops for menus\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 count = 0
 while count < 3:
     print("Round", count + 1)
     count += 1
-print("Loop finished")
+# YOUR TURN: print("Loop finished")
 """,
                 challengeQuestion: "Which keyword exits a while loop early?",
                 challengeAnswer: "break",
@@ -1799,12 +1853,21 @@ print("Loop finished")
                 body: "Repeat while a condition is True. Always make sure the loop can end!",
                 teacherScript: "Loops are how games run frame after frame.",
                 tryItPrompt: nil,
+                practiceSteps: [
+                    "Read Learn — study the example for \"while loops\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 count = 1
 while count <= 5:
     print("Count is", count)
     count += 1
-print("Done!")
+# YOUR TURN: print("Done!")
 """,
                 challengeQuestion: "What happens if you forget count += 1 in a while True loop?",
                 challengeAnswer: "infinite loop",
@@ -1816,10 +1879,19 @@ print("Done!")
                 body: "for i in range(5) repeats 5 times with i = 0,1,2,3,4.",
                 teacherScript: "When you know how many times, for is cleaner than while.",
                 tryItPrompt: nil,
+                practiceSteps: [
+                    "Read Learn — study the example for \"for loops\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 for i in range(3):
     print("Round", i + 1)
-    print("Buzz!")
+    # YOUR TURN: print("Buzz!")
 """,
                 challengeQuestion: "How many times does range(4) loop?",
                 challengeAnswer: "4",
@@ -1831,10 +1903,20 @@ for i in range(3):
                 body: "Print one number's times table from 1 to 10.",
                 teacherScript: "Nested loops come later — one loop is enough today.",
                 tryItPrompt: "Change n to your favorite number.",
+                practiceSteps: [
+                    "Read Learn — study the example for \"Mini project: Multiplication Table\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Change n to your favorite number.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 n = 7
 for i in range(1, 11):
-    print(n, "x", i, "=", n * i)
+    # YOUR TURN: print(n, "x", i, "=", n * i)
 """,
                 challengeQuestion: nil,
                 challengeAnswer: nil
@@ -1871,6 +1953,13 @@ Work through the scaffold below line by line before running the full program.
 """,
                 teacherScript: "Paper trace n=15 and n=10 before coding. Common bug: wrong order of if tests. Second common bug: range(1, 20) stops at 19 — use 21.",
                 tryItPrompt: "After it works for 1–20, change the loop to 1–30.",
+                practiceSteps: [
+                    "Read Learn — study the example for \"Fizz Buzz — learn the pieces\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Complete each TODO or YOUR TURN line in order — run after each fix.",
+                    "After it works for 1–20, change the loop to 1–30.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
 # Step 1 — try modulo (Run this first)
 print("10 % 3 =", 10 % 3)
@@ -1922,9 +2011,18 @@ assert "range" in user_code
                 body: "def greet(name): groups code under one name. Call it with greet(\"Soha\").",
                 teacherScript: "Functions are like custom LEGO pieces you build once and reuse.",
                 tryItPrompt: nil,
+                practiceSteps: [
+                    "Read Learn — study the example for \"Define a function\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 def greet(name):
-    print("Hello,", name, "!")
+    # YOUR TURN: print("Hello,", name, "!")
 
 greet("Soha")
 greet("Python")
@@ -1948,12 +2046,21 @@ assert "def greet" in user_code
                 body: "return sends a result back. area = rectangle_area(4, 5) stores the answer.",
                 teacherScript: "Some functions do something; some functions calculate and give back a value.",
                 tryItPrompt: nil,
+                practiceSteps: [
+                    "Read Learn — study the example for \"return values\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 def add(a, b):
     return a + b
 
 total = add(3, 7)
-print("Sum:", total)
+# YOUR TURN: print("Sum:", total)
 """,
                 challengeQuestion: "What keyword sends a value back from a function?",
                 challengeAnswer: "return"
@@ -1964,11 +2071,21 @@ print("Sum:", total)
                 body: "Write add, subtract, multiply as separate functions.",
                 teacherScript: "This is how real programs stay organized.",
                 tryItPrompt: "Add a divide function that checks for zero.",
+                practiceSteps: [
+                    "Read Learn — study the example for \"Mini project: Calculator functions\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Add a divide function that checks for zero.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 def multiply(a, b):
     return a * b
 
-print(multiply(6, 7))
+# YOUR TURN: print(multiply(6, 7))
 """,
                 challengeQuestion: nil,
                 challengeAnswer: nil
@@ -1993,15 +2110,25 @@ with open("notes.txt") as f:
 """,
                 teacherScript: "After saving, open notes.txt in TextEdit together.",
                 tryItPrompt: "Append a second line with mode \"a\".",
+                practiceSteps: [
+                    "Read Learn — study the example for \"Read & write files\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Append a second line with mode \"a\".",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 with open("notes.txt", "w") as f:
-    f.write("Line 1 from Soha\\n")
+    f.write("Line 1 from Soha\n")
 
 with open("notes.txt", "a") as f:
-    f.write("Line 2 appended\\n")
+    f.write("Line 2 appended\n")
 
 with open("notes.txt") as f:
-    print(f.read())
+    # YOUR TURN: print(f.read())
 """,
                 challengeQuestion: "Which mode appends without erasing?",
                 challengeAnswer: "append",
@@ -2025,10 +2152,19 @@ with open("notes.txt") as f:
                 body: "import random then random.randint(1, 10) picks a surprise number.",
                 teacherScript: "Games need unpredictability — that's what random gives us.",
                 tryItPrompt: nil,
+                practiceSteps: [
+                    "Read Learn — study the example for \"Random numbers\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 import random
 dice = random.randint(1, 6)
-print("You rolled", dice)
+# YOUR TURN: print("You rolled", dice)
 """,
                 challengeQuestion: "Which module gives random numbers?",
                 challengeAnswer: "random",
@@ -2040,6 +2176,13 @@ print("You rolled", dice)
                 body: "Open the Games tab for the full step-by-step. Today: get a working version in Playground.",
                 teacherScript: "Walk through one round together before Soha codes solo.",
                 tryItPrompt: "Complete Game 1 in the Games tab.",
+                practiceSteps: [
+                    "Read Learn, then open the **Games** tab for step-by-step instructions.",
+                    "Copy or open the starter in Playground.",
+                    "Get one feature working before adding extras.",
+                    "Test a happy path and one wrong input.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: games[0].starterCode,
                 challengeQuestion: nil,
                 challengeAnswer: nil
@@ -2050,6 +2193,13 @@ print("You rolled", dice)
                 body: "Second game — best of 3 rounds with a score counter.",
                 teacherScript: "Notice how the same patterns repeat: input, compare, update score.",
                 tryItPrompt: "Complete Game 2 in the Games tab.",
+                practiceSteps: [
+                    "Read Learn, then open the **Games** tab for step-by-step instructions.",
+                    "Copy or open the starter in Playground.",
+                    "Get one feature working before adding extras.",
+                    "Test a happy path and one wrong input.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: games[1].starterCode,
                 challengeQuestion: nil,
                 challengeAnswer: nil
@@ -2064,9 +2214,18 @@ Unlike lists, tuples cannot change after creation — good for coordinates.
 """,
                 teacherScript: "Compare list vs tuple — when would you use each?",
                 tryItPrompt: nil,
+                practiceSteps: [
+                    "Read Learn — study the example for \"Tuples\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 point = (3, 4)
-print("x:", point[0], "y:", point[1])
+# YOUR TURN: print("x:", point[0], "y:", point[1])
 """,
                 challengeQuestion: "Can you change point[0] after creating a tuple?",
                 challengeAnswer: "no",
@@ -2082,7 +2241,16 @@ print("x:", point[0], "y:", point[1])
 """,
                 teacherScript: "Call total with different numbers of arguments.",
                 tryItPrompt: nil,
+                practiceSteps: [
+                    "Read Learn — study the example for \"Default parameters & *args\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 def greet(name, greeting="Hello"):
     print(greeting + ",", name)
 
@@ -2092,7 +2260,7 @@ greet("Soha", "Hi")
 def total(*numbers):
     return sum(numbers)
 
-print(total(1, 2, 3))
+# YOUR TURN: print(total(1, 2, 3))
 """,
                 challengeQuestion: "What symbol collects extra arguments?",
                 challengeAnswer: "*args",
@@ -2116,6 +2284,12 @@ print(total(1, 2, 3))
                 body: "scores = [10, 20, 30] holds multiple values. scores[0] is the first item.",
                 teacherScript: "Lists are how we store inventories, questions, and high scores.",
                 tryItPrompt: nil,
+                practiceSteps: [
+                    "Read Learn — study the example for \"Lists\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
 fruits = ["apple", "banana", "cherry"]
 print(fruits[0])
@@ -2143,10 +2317,19 @@ assert "append" in user_code
                 body: "for item in my_list: visits each element.",
                 teacherScript: "This pattern shows up in almost every game menu and quiz.",
                 tryItPrompt: nil,
+                practiceSteps: [
+                    "Read Learn — study the example for \"Loop through a list\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 colors = ["red", "green", "blue"]
 for c in colors:
-    print("I like", c)
+    # YOUR TURN: print("I like", c)
 """,
                 challengeQuestion: nil,
                 challengeAnswer: nil
@@ -2157,6 +2340,13 @@ for c in colors:
                 body: "Game 3 — Science Bowl–style multiple choice with 5 toss-ups and a running score.",
                 teacherScript: "Connect to Science Bowl prep — she already knows these topics! Add her own toss-ups from DOE practice.",
                 tryItPrompt: "Add 2 more science questions from your NSB prep.",
+                practiceSteps: [
+                    "Read Learn, then open the **Games** tab for step-by-step instructions.",
+                    "Copy or open the starter in Playground.",
+                    "Get one feature working before adding extras.",
+                    "Test a happy path and one wrong input.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: games[2].starterCode,
                 challengeQuestion: "How many questions are in the starter quiz?",
                 challengeAnswer: "5",
@@ -2178,13 +2368,23 @@ Complete the list lessons above before Session 6.
 """,
                 teacherScript: "First button click is a big win — celebrate it!",
                 tryItPrompt: "Add a label with today's date.",
+                practiceSteps: [
+                    "Read Learn — study the example for \"Tkinter: windows & buttons\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Add a label with today's date.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 import tkinter as tk
 
 root = tk.Tk()
 root.title("Hello GUI")
 tk.Label(root, text="Hi from Soha!").pack(pady=10)
-tk.Button(root, text="Click me", command=lambda: print("Clicked!")).pack()
+# YOUR TURN: tk.Button(root, text="Click me", command=lambda: print("Clicked!")).pack()
 root.mainloop()
 """,
                 challengeQuestion: "Which library creates GUI windows?",
@@ -2209,12 +2409,21 @@ root.mainloop()
                 body: "On screen, (0,0) is top-left. x goes right, y goes down.",
                 teacherScript: "Draw a quick sketch on paper before coding — it helps every time.",
                 tryItPrompt: nil,
+                practiceSteps: [
+                    "Read Learn — study the example for \"Coordinates\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 # Text version: track x,y on a grid
 x, y = 0, 0
 print("Start at", x, y)
 x += 1
-print("Moved right:", x, y)
+# YOUR TURN: print("Moved right:", x, y)
 """,
                 challengeQuestion: "On a screen, which direction does y increase?",
                 challengeAnswer: "down"
@@ -2225,10 +2434,20 @@ print("Moved right:", x, y)
                 body: "pip3 install pygame once. Then open a window and draw a rectangle.",
                 teacherScript: "First run might feel slow — that's normal. Celebrate the window appearing!",
                 tryItPrompt: "Run: pip3 install pygame",
+                practiceSteps: [
+                    "Read Learn — study the example for \"pygame window\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Run: pip3 install pygame",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 import pygame
 pygame.init()
-screen = pygame.display.set_mode((300, 200))
+# YOUR TURN: screen = pygame.display.set_mode((300, 200))
 screen.fill((40, 40, 80))
 pygame.draw.rect(screen, (255, 100, 100), (50, 70, 40, 40))
 pygame.display.flip()
@@ -2245,6 +2464,13 @@ pygame.quit()
                 body: "Text grid game first — then optional pygame version later.",
                 teacherScript: "Game 4 teaches state: where am I? where is the goal?",
                 tryItPrompt: "Complete Game 4 in the Games tab.",
+                practiceSteps: [
+                    "Read Learn, then open the **Games** tab for step-by-step instructions.",
+                    "Copy or open the starter in Playground.",
+                    "Get one feature working before adding extras.",
+                    "Test a happy path and one wrong input.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: games[3].starterCode,
                 challengeQuestion: nil,
                 challengeAnswer: nil
@@ -2261,13 +2487,23 @@ Run in Terminal or use Open in Terminal from Playground — `plt.show()` needs a
 """,
                 teacherScript: "Connect to Science Bowl — plot practice quiz scores over time.",
                 tryItPrompt: "pip3 install matplotlib",
+                practiceSteps: [
+                    "Read Learn — study the example for \"Plotting with matplotlib\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "pip3 install matplotlib",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 # pip3 install matplotlib
 import matplotlib.pyplot as plt
 
 scores = [70, 85, 90]
 days = [1, 2, 3]
-plt.plot(days, scores, marker="o")
+# YOUR TURN: plt.plot(days, scores, marker="o")
 plt.title("My Quiz Scores")
 plt.ylim(0, 100)
 plt.show()
@@ -2294,6 +2530,13 @@ plt.show()
                 body: "Before coding: sketch the player, 3 coin spots, timer display, and win screen.",
                 teacherScript: "Five minutes of planning saves an hour of debugging.",
                 tryItPrompt: "Open Final Boss tab and read all three requirements.",
+                practiceSteps: [
+                    "Read Learn and sketch or write your plan on paper first.",
+                    "Open Playground and replace each placeholder with your own words.",
+                    "Run and read the output — does it match your plan?",
+                    "Add one more line that is specific to your project.",
+                    "Answer the quick check when done.",
+                ],
                 starterCode: "# Sketch on paper first!\nprint(\"My game plan:\")\nprint(\"1. Player moves with arrows\")\nprint(\"2. Three coins at fixed spots\")\nprint(\"3. 30 second timer\")",
                 challengeQuestion: "Name the three Final Challenge requirements.",
                 challengeAnswer: "sound coins timer",
@@ -2310,6 +2553,13 @@ plt.show()
                 body: "Player movement + coin collision + score. Get this working before sound and timer.",
                 teacherScript: "One feature at a time — never add sound, timer, and coins all at once.",
                 tryItPrompt: "Use starter code from Game 5.",
+                practiceSteps: [
+                    "Read Learn, then open the **Games** tab for step-by-step instructions.",
+                    "Copy or open the starter in Playground.",
+                    "Get one feature working before adding extras.",
+                    "Test a happy path and one wrong input.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: games[4].starterCode,
                 challengeQuestion: nil,
                 challengeAnswer: nil
@@ -2320,6 +2570,13 @@ plt.show()
                 body: "Check off each requirement in the Final Boss tab. All three must work together.",
                 teacherScript: "This is your portfolio piece — take a screen recording when it works!",
                 tryItPrompt: "Mark all three checkboxes when done.",
+                practiceSteps: [
+                    "Read Learn, then open the **Games** tab for step-by-step instructions.",
+                    "Copy or open the starter in Playground.",
+                    "Get one feature working before adding extras.",
+                    "Test a happy path and one wrong input.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: games[4].starterCode,
                 challengeQuestion: nil,
                 challengeAnswer: nil
@@ -2342,9 +2599,19 @@ plt.show()
                 body: "A Flask app runs a server on your Mac. The browser sends requests; Python sends back HTML pages.",
                 teacherScript: "Compare to Science Bowl Coach — that's a native app; Flask is a website on your own computer.",
                 tryItPrompt: "pip3 install flask",
+                practiceSteps: [
+                    "Read Learn — study the example for \"How web apps work\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "pip3 install flask",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 print("Browser  →  request  →  Flask  →  HTML response")
-print("Try: python3 todo_app.py then open Safari")
+# YOUR TURN: print("Try: python3 todo_app.py then open Safari")
 """,
                 challengeQuestion: "What command installs Flask?",
                 challengeAnswer: "pip3 install flask",
@@ -2365,7 +2632,17 @@ Each `@app.route` maps a URL to a function that returns HTML.
 """,
                 teacherScript: "Flask does not run inside the in-app Playground Run button — use Terminal.",
                 tryItPrompt: "Change the heading to include your name.",
+                practiceSteps: [
+                    "Read Learn — study the example for \"Your first Flask route\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Change the heading to include your name.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 # pip3 install flask
 from flask import Flask
 
@@ -2376,7 +2653,7 @@ def home():
     return "<h1>Hello from Soha!</h1><p>My first web page.</p>"
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # YOUR TURN: app.run(debug=True)
 """,
                 challengeQuestion: "What URL opens your local Flask app?",
                 challengeAnswer: "127.0.0.1:5000",
@@ -2389,9 +2666,19 @@ if __name__ == "__main__":
                 body: "Add delete tasks, mark complete, or a counter in the page title.",
                 teacherScript: "One feature at a time. Save todo_app.py in the scripts folder.",
                 tryItPrompt: "Add a route /clear that empties the todo list.",
+                practiceSteps: [
+                    "Read Learn — study the example for \"Extend your Todo app\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Add a route /clear that empties the todo list.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 # Extend the Session 9 Todo app from the lesson above
-print("Add POST /add route and a form with <input name=task>")
+# YOUR TURN: print("Add POST /add route and a form with <input name=task>")
 """,
                 challengeQuestion: nil,
                 challengeAnswer: nil
@@ -2413,10 +2700,20 @@ print("Add POST /add route and a form with <input name=task>")
                 body: "Add styling, test every button, and fix bugs before presentation day.",
                 teacherScript: "Good demos fail gracefully — have a backup screen recording.",
                 tryItPrompt: "Add inline CSS: style the h1 and button colors.",
+                practiceSteps: [
+                    "Read Learn and sketch or write your plan on paper first.",
+                    "Open Playground and replace each placeholder with your own words.",
+                    "Run and read the output — does it match your plan?",
+                    "Add one more line that is specific to your project.",
+                    "Answer the quick check when done.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 # In your Flask home() return string, wrap with:
 # <style>body{font-family:sans-serif;background:#1a1a2e;color:white;}</style>
-print("Polish checklist: styling · delete · mobile-friendly · tested")
+# YOUR TURN: print("Polish checklist: styling · delete · mobile-friendly · tested")
 """,
                 challengeQuestion: nil,
                 challengeAnswer: nil
@@ -2428,13 +2725,23 @@ print("Polish checklist: styling · delete · mobile-friendly · tested")
                 body: "Full path complete! Levels 1–4 plus portfolio. Export progress and screenshot your best projects.",
                 teacherScript: "Celebrate! Screenshot Coin Collector, Todo app, and quiz game for a portfolio folder.",
                 tryItPrompt: "Progress tab → Export progress JSON as backup.",
+                practiceSteps: [
+                    "Read Learn — study the example for \"Portfolio & next steps\".",
+                    "Open Playground. Run the starter once and read every line of output.",
+                    "Change one value or line, predict the output, then Run again.",
+                    "Progress tab → Export progress JSON as backup.",
+                    "Run auto-checks (if any), then answer the quick check.",
+                ],
                 starterCode: """
+# Read the steps in Learn, then complete below.
+
+
 print("=== Soha Python Portfolio ===")
 print("1. Coin Collector (pygame)")
 print("2. Science Quiz game")
 print("3. Todo List (Flask)")
 print("4. Tkinter Calendar")
-print("Next: SwiftUI apps · AI tools · more Flask")
+# YOUR TURN: print("Next: SwiftUI apps · AI tools · more Flask")
 """,
                 challengeQuestion: nil,
                 challengeAnswer: nil

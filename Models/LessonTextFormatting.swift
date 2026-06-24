@@ -1,11 +1,12 @@
 import Foundation
 
-/// Lesson copy uses lightweight markdown (`**bold**`, `` `code` ``).
+/// Lesson copy uses lightweight markdown (`**bold**`, `` `code` ``, fenced blocks).
 enum LessonTextFormatting {
     enum BlockKind {
         case text
         case bullet
         case numbered
+        case code
     }
 
     struct DisplayBlock: Identifiable {
@@ -18,14 +19,38 @@ enum LessonTextFormatting {
         source
             .replacingOccurrences(of: "**", with: "")
             .replacingOccurrences(of: "`", with: "")
+            .replacingOccurrences(of: "```", with: "")
     }
 
-    /// One non-empty line per block — curriculum uses single newlines, which full Markdown collapses.
+    /// Splits body into text lines and fenced ``` code ``` blocks.
     static func displayBlocks(from source: String) -> [DisplayBlock] {
-        let lines = source.split(separator: "\n", omittingEmptySubsequences: false).map(String.init)
         var blocks: [DisplayBlock] = []
-        for line in lines {
+        var inFence = false
+        var fenceLines: [String] = []
+
+        func flushFence() {
+            guard !fenceLines.isEmpty else { return }
+            blocks.append(
+                DisplayBlock(id: blocks.count, text: fenceLines.joined(separator: "\n"), kind: .code)
+            )
+            fenceLines = []
+        }
+
+        for line in source.split(separator: "\n", omittingEmptySubsequences: false).map(String.init) {
             let trimmed = line.trimmingCharacters(in: .whitespaces)
+            if trimmed.hasPrefix("```") {
+                if inFence {
+                    flushFence()
+                    inFence = false
+                } else {
+                    inFence = true
+                }
+                continue
+            }
+            if inFence {
+                fenceLines.append(line)
+                continue
+            }
             guard !trimmed.isEmpty else { continue }
             blocks.append(
                 DisplayBlock(
@@ -34,6 +59,9 @@ enum LessonTextFormatting {
                     kind: blockKind(for: trimmed)
                 )
             )
+        }
+        if inFence {
+            flushFence()
         }
         return blocks
     }

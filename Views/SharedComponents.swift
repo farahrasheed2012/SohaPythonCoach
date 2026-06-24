@@ -124,10 +124,22 @@ struct LessonBodyText: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             ForEach(blocks) { block in
-                inlineMarkdown(block.text)
+                blockView(block)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, topSpacing(for: block))
             }
+        }
+    }
+
+    @ViewBuilder
+    private func blockView(_ block: LessonTextFormatting.DisplayBlock) -> some View {
+        switch block.kind {
+        case .code:
+            CodeBlockView(code: block.text) {
+                ClipboardHelper.copy(block.text)
+            }
+        default:
+            inlineMarkdown(block.text)
         }
     }
 

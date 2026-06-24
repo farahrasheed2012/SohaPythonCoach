@@ -33,6 +33,8 @@ struct LessonStep: Identifiable, Hashable, Codable {
     let body: String
     let teacherScript: String
     let tryItPrompt: String?
+    /// Ordered “do this” steps shown to the student (build, predict, run, change).
+    let practiceSteps: [String]?
     let starterCode: String?
     let challengeQuestion: String?
     /// Primary accepted answer (revealed as a hint after two wrong tries).
@@ -50,6 +52,7 @@ struct LessonStep: Identifiable, Hashable, Codable {
         body: String,
         teacherScript: String,
         tryItPrompt: String? = nil,
+        practiceSteps: [String]? = nil,
         starterCode: String? = nil,
         challengeQuestion: String? = nil,
         challengeAnswer: String? = nil,
@@ -63,6 +66,7 @@ struct LessonStep: Identifiable, Hashable, Codable {
         self.body = body
         self.teacherScript = teacherScript
         self.tryItPrompt = tryItPrompt
+        self.practiceSteps = practiceSteps
         self.starterCode = starterCode
         self.challengeQuestion = challengeQuestion
         self.challengeAnswer = challengeAnswer
@@ -83,6 +87,11 @@ struct LessonStep: Identifiable, Hashable, Codable {
             answers.append(contentsOf: challengeAcceptedAnswers)
         }
         return answers
+    }
+
+    var requiresCodeTests: Bool {
+        guard let codeTests, !codeTests.isEmpty else { return false }
+        return true
     }
 }
 

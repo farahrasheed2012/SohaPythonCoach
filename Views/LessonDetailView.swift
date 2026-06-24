@@ -10,13 +10,31 @@ struct LessonDetailView: View {
     @State private var challengeFeedback: String?
     @State private var challengeCorrect = false
     @State private var wrongAttempts = 0
+    @State private var showCoachNotes = false
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 headerRow
 
-                Card(title: lesson.title, subtitle: lessonSubtitle, accent: .purple) {
+                if !practiceSteps.isEmpty {
+                    Card(title: "Your turn — do this", subtitle: "Type code in Playground, Run, then change one line", accent: .blue) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            ForEach(Array(practiceSteps.enumerated()), id: \.offset) { index, step in
+                                HStack(alignment: .top, spacing: 10) {
+                                    Text("\(index + 1).")
+                                        .font(.caption.weight(.bold))
+                                        .foregroundStyle(.secondary)
+                                        .frame(width: 18, alignment: .trailing)
+                                    Text(step)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Card(title: "Learn", subtitle: lessonSubtitle, accent: .purple) {
                     HStack(alignment: .top, spacing: 12) {
                         LessonBodyText(text: lesson.body)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -27,29 +45,31 @@ struct LessonDetailView: View {
                     }
                 }
 
-                Card(title: "Teacher script", subtitle: "Words for parent/coach", accent: .orange) {
-                    Text(lesson.teacherScript)
-                        .italic()
-                }
-
-                if let prompt = lesson.tryItPrompt {
-                    Card(title: "Try it", accent: .blue) {
-                        Text(prompt)
-                    }
-                }
-
                 if let code = lesson.starterCode {
-                    Card(title: "Starter code", accent: .green) {
+                    Card(title: "Starter code", subtitle: "Not finished — you fill in the TODOs", accent: .green) {
                         CodeBlockView(code: code) {
                             ClipboardHelper.copy(code)
                         }
                         playgroundLink(starterCode: code)
+                        if lesson.requiresCodeTests {
+                            codeTestsStatus
+                        }
                     }
                 }
 
                 if let question = lesson.challengeQuestion {
                     challengeCard(question: question)
                 }
+
+                DisclosureGroup(isExpanded: $showCoachNotes) {
+                    Text(lesson.teacherScript)
+                        .italic()
+                        .padding(.top, 4)
+                } label: {
+                    Label("Parent/coach notes (optional)", systemImage: "person.fill.questionmark")
+                        .font(.subheadline.weight(.medium))
+                }
+                .padding(.horizontal, 4)
 
                 completionButtons
             }
@@ -63,6 +83,16 @@ struct LessonDetailView: View {
                 challengeFeedback = "Correct!"
             }
         }
+    }
+
+    private var practiceSteps: [String] {
+        if let steps = lesson.practiceSteps, !steps.isEmpty {
+            return steps
+        }
+        if let prompt = lesson.tryItPrompt {
+            return [prompt]
+        }
+        return []
     }
 
     private var lessonSubtitle: String {
@@ -93,8 +123,24 @@ struct LessonDetailView: View {
         }
     }
 
+    private var codeTestsStatus: some View {
+        Group {
+            if appState.hasPassedCodeTests(lesson.id) {
+                Label("Auto-checks passed — nice work!", systemImage: "checkmark.seal.fill")
+                    .font(.caption)
+                    .foregroundStyle(.green)
+            } else {
+                Text("Open Playground → edit the code → Run tests. All checks must pass before you mark complete.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.top, 4)
+    }
+
     private func challengeCard(question: String) -> some View {
-        Card(title: "Quick check", accent: .cyan) {
+        Card(title: "Quick check", subtitle: "Explain in your own words", accent: .cyan) {
             HStack(alignment: .top, spacing: 12) {
                 Text(question)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -135,6 +181,12 @@ struct LessonDetailView: View {
         }
     }
 
+    private var playgroundGuidance: String? {
+        let steps = practiceSteps
+        guard !steps.isEmpty else { return lesson.tryItPrompt }
+        return "Step 1: " + steps[0]
+    }
+
     private func playgroundLink(starterCode: String?) -> some View {
         NavigationLink {
             PlaygroundView(
@@ -149,6 +201,8 @@ struct LessonDetailView: View {
                 starterFingerprint: PlaygroundContext.starterFingerprint(starter: starterCode),
                 scriptFilename: "\(lesson.id).py",
                 codeTests: lesson.codeTests ?? [],
+                lessonIdForTests: lesson.id,
+                practiceGuidance: playgroundGuidance,
                 lessonCommentHeader: PlaygroundContext.lessonCommentHeader(
                     lessonTitle: lesson.title,
                     lessonBody: lesson.body,
@@ -163,6 +217,9 @@ struct LessonDetailView: View {
     }
 
     private var canMarkComplete: Bool {
+        if lesson.requiresCodeTests, !appState.hasPassedCodeTests(lesson.id) {
+            return appState.isLessonComplete(lesson.id)
+        }
         if lesson.challengeQuestion != nil {
             return challengeCorrect || appState.isLessonComplete(lesson.id)
         }
@@ -171,6 +228,12 @@ struct LessonDetailView: View {
 
     private var completionButtons: some View {
         VStack(spacing: 8) {
+            if lesson.requiresCodeTests, !appState.hasPassedCodeTests(lesson.id), !appState.isLessonComplete(lesson.id) {
+                Text("Pass all auto-checks in Playground before marking complete.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
             if lesson.challengeQuestion != nil, !challengeCorrect, !appState.isLessonComplete(lesson.id) {
                 Text("Answer the quick check correctly before marking complete.")
                     .font(.caption)

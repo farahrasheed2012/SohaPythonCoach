@@ -2,7 +2,15 @@
 """Generate SessionTeachingLessons.swift — 3 teach lessons before each session week (11–50)."""
 
 from pathlib import Path
-import textwrap
+
+from lesson_teaching_utils import (
+    auto_code_tests,
+    default_practice_steps,
+    emit_code_tests_swift,
+    emit_practice_steps_swift,
+    scaffold_starter,
+    swift_string,
+)
 
 # week -> list of 3 lessons (title, body, teacher_script, starter_code, challenge_q, challenge_a, try_it)
 WEEKS = {
@@ -221,21 +229,28 @@ WEEKS.update({
 })
 
 
-def swift_string(s: str) -> str:
-    return s.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
-
-
 def emit_lesson(week: int, idx: int, lesson: tuple) -> str:
     title = lesson[0]
     body = lesson[1]
     script = lesson[2]
-    code = lesson[3]
+    code = lesson[3] if len(lesson) > 3 and lesson[3] is not None else ""
     cq = lesson[4] if len(lesson) > 4 else None
     ca = lesson[5] if len(lesson) > 5 else None
     lid = f"w{week}-l{idx}"
-    cq_part = ""
+    scaffolded = scaffold_starter(code, lid)
+    steps = default_practice_steps(title, None, scaffolded)
+    tests = auto_code_tests(lid, scaffolded, ca)
+    steps_swift = emit_practice_steps_swift(steps, indent="                ")
+    tests_swift = emit_code_tests_swift(lid, tests, indent="                ")
+    trailing_parts: list[str] = []
     if cq and ca:
-        cq_part = f',\n                challengeQuestion: "{swift_string(cq)}",\n                challengeAnswer: "{swift_string(ca)}"'
+        trailing_parts.append(
+            f'challengeQuestion: "{swift_string(cq)}",\n                challengeAnswer: "{swift_string(ca)}"'
+        )
+    if tests_swift:
+        trailing_parts.append(tests_swift.rstrip())
+    trailing = ",\n                ".join(trailing_parts)
+    trailing_block = f",\n                {trailing}" if trailing else ""
     return f"""            CurriculumSeed.teachingLesson(
                 id: "{lid}",
                 title: "{swift_string(title)}",
@@ -243,9 +258,10 @@ def emit_lesson(week: int, idx: int, lesson: tuple) -> str:
 {body}
 \"\"\",
                 teacherScript: "{swift_string(script)}",
+{steps_swift}
                 starterCode: \"\"\"
-{code}
-\"\"\"{cq_part}
+{scaffolded}
+\"\"\"{trailing_block}
             )"""
 
 

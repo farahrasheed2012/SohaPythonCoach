@@ -10,6 +10,9 @@ struct PlaygroundView: View {
     var starterFingerprint: String = PlaygroundContext.starterFingerprint(starter: "print(\"Hello, Soha!\")")
     var scriptFilename: String = "soha_playground.py"
     var codeTests: [CodeTest] = []
+    /// When opened from a Journey lesson, used to remember auto-check completion.
+    var lessonIdForTests: String? = nil
+    var practiceGuidance: String? = nil
     /// When set, prepends this block if saved Playground code lacks lesson comments.
     var lessonCommentHeader: String? = nil
 
@@ -25,6 +28,15 @@ struct PlaygroundView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            if let practiceGuidance, !practiceGuidance.isEmpty {
+                Text(practiceGuidance)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(Color.blue.opacity(0.08))
+            }
             toolbar
             HSplitView {
                 editorPane
@@ -244,6 +256,9 @@ struct PlaygroundView: View {
         testResults = await PythonRunner.runWithTests(userCode: runnable, tests: codeTests)
         let passed = testResults.filter(\.passed).count
         output = "Tests: \(passed)/\(codeTests.count) passed."
+        if let lessonIdForTests, passed == codeTests.count, !codeTests.isEmpty {
+            appState.setLessonCodeTestsPassed(lessonIdForTests, passed: true)
+        }
     }
 
     private func launchPygame() {

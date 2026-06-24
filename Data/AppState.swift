@@ -13,6 +13,7 @@ final class AppState {
     var finalChallengeChecks: Set<String> = []
     var weekNotes: [String: String] = [:]
     var stuckItems: Set<String> = []
+    var lessonCodeTestsPassed: Set<String> = []
     var playgroundSnapshots: [String: PlaygroundSnapshot] = [:]
     var selectedWeekID: Int = 1
     var studentName: String = "Soha"
@@ -51,6 +52,19 @@ final class AppState {
 
     func isStuck(_ id: String) -> Bool {
         stuckItems.contains(id)
+    }
+
+    func hasPassedCodeTests(_ lessonId: String) -> Bool {
+        lessonCodeTestsPassed.contains(lessonId)
+    }
+
+    func setLessonCodeTestsPassed(_ lessonId: String, passed: Bool) {
+        if passed {
+            lessonCodeTestsPassed.insert(lessonId)
+        } else {
+            lessonCodeTestsPassed.remove(lessonId)
+        }
+        save()
     }
 
     func toggleStuck(_ id: String) {
@@ -131,6 +145,7 @@ final class AppState {
             finalChallengeChecks: Array(finalChallengeChecks),
             weekNotes: weekNotes,
             stuckItems: Array(stuckItems),
+            lessonCodeTestsPassed: Array(lessonCodeTestsPassed),
             playgroundSnapshots: playgroundSnapshots,
             selectedWeekID: selectedWeekID,
             studentName: studentName,
@@ -208,6 +223,7 @@ final class AppState {
         finalChallengeChecks = Set(payload.finalChallengeChecks)
         weekNotes = payload.weekNotes
         stuckItems = Set(payload.stuckItems)
+        lessonCodeTestsPassed = Set(payload.lessonCodeTestsPassed ?? [])
         selectedWeekID = payload.selectedWeekID
         studentName = payload.studentName.isEmpty ? "Soha" : payload.studentName
         progressSchemaVersion = payload.schemaVersion ?? 1
@@ -236,6 +252,7 @@ private struct StoredProgress: Codable {
     var finalChallengeChecks: [String]
     var weekNotes: [String: String]
     var stuckItems: [String]
+    var lessonCodeTestsPassed: [String]?
     var playgroundSnapshots: [String: PlaygroundSnapshot]?
     var playgroundCode: [String: String]?
     var selectedWeekID: Int
