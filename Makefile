@@ -1,4 +1,7 @@
-.PHONY: build regenerate teaching scaffolds
+.PHONY: build regenerate teaching scaffolds patch
+
+patch:
+	python3 Scripts/patch_hand_authored_lessons.py
 
 teaching:
 	python3 Scripts/generate_session_teaching.py
@@ -6,7 +9,7 @@ teaching:
 scaffolds:
 	python3 Scripts/generate_session_scaffolds.py
 
-regenerate: teaching scaffolds
+regenerate: patch teaching scaffolds
 
 build:
 	xcodebuild -project SohaPythonCoach.xcodeproj -scheme SohaPythonCoach \

@@ -3,6 +3,11 @@
 
 from pathlib import Path
 
+from enrich_lesson_body import (
+    enrich_body,
+    enrich_starter_code,
+    pedagogical_practice_steps,
+)
 from lesson_teaching_utils import (
     auto_code_tests,
     default_practice_steps,
@@ -229,6 +234,10 @@ WEEKS.update({
 })
 
 
+def swift_multiline_literal(text: str) -> str:
+    return text.replace("\\", "\\\\")
+
+
 def emit_lesson(week: int, idx: int, lesson: tuple) -> str:
     title = lesson[0]
     body = lesson[1]
@@ -237,8 +246,12 @@ def emit_lesson(week: int, idx: int, lesson: tuple) -> str:
     cq = lesson[4] if len(lesson) > 4 else None
     ca = lesson[5] if len(lesson) > 5 else None
     lid = f"w{week}-l{idx}"
-    scaffolded = scaffold_starter(code, lid)
-    steps = default_practice_steps(title, None, scaffolded)
+    enriched_body = swift_multiline_literal(
+        enrich_body(title, body, code, script, lid, None, cq, ca)
+    )
+    starter = enrich_starter_code(code, title, lid)
+    scaffolded = scaffold_starter(starter, lid)
+    steps = pedagogical_practice_steps(title, enriched_body, scaffolded, None, lid)
     tests = auto_code_tests(lid, scaffolded, ca)
     steps_swift = emit_practice_steps_swift(steps, indent="                ")
     tests_swift = emit_code_tests_swift(lid, tests, indent="                ")
@@ -255,12 +268,12 @@ def emit_lesson(week: int, idx: int, lesson: tuple) -> str:
                 id: "{lid}",
                 title: "{swift_string(title)}",
                 body: \"\"\"
-{body}
+{enriched_body}
 \"\"\",
                 teacherScript: "{swift_string(script)}",
 {steps_swift}
                 starterCode: \"\"\"
-{scaffolded}
+{swift_multiline_literal(scaffolded)}
 \"\"\"{trailing_block}
             )"""
 

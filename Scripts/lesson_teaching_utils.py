@@ -220,7 +220,12 @@ def emit_code_tests_swift(
     if not tests:
         return ""
     lines = [f"{indent}codeTests: ["]
-    for i, (tid, label, assertion, inspect_only) in enumerate(tests):
+    for i, item in enumerate(tests):
+        if len(item) == 4:
+            tid, label, assertion, inspect_only = item
+        else:
+            tid, label, assertion = item
+            inspect_only = "user_code" in assertion
         slug = re.sub(r"[^a-z0-9]+", "-", label.lower()).strip("-")[:24] or f"t{i}"
         test_id = f"{lesson_id}-{slug}"
         inspect = "true" if inspect_only else "false"

@@ -6,6 +6,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from lesson_enrichments import enrichment_for
 from lesson_teaching_utils import (
     auto_code_tests,
     default_practice_steps,
@@ -80,6 +81,122 @@ def parse_field(block: str, field: str) -> str | None:
     return None
 
 
+def swift_multiline_literal(text: str) -> str:
+    """Escape backslashes for Swift multiline string literals."""
+    return text.replace("\\", "\\\\")
+
+
+def replace_triple_quoted_field(block: str, field: str, value: str) -> str:
+    safe = swift_multiline_literal(value.strip())
+    if re.search(rf'{field}: """', block):
+        return re.sub(
+            rf'{field}: """.*?"""',
+            f'{field}: """\n{safe}\n"""',
+            block,
+            count=1,
+            flags=re.DOTALL,
+        )
+    # Single-line string → multiline for rich content
+    return re.sub(
+        rf'{field}: "((?:[^"\\]|\\.)*)"',
+        f'{field}: """\n{safe}\n"""',
+        block,
+        count=1,
+    )
+
+
+def replace_starter_code_field(block: str, value: str) -> str:
+    safe = swift_multiline_literal(value.strip())
+    if "games[" in block and "starterCode: games[" in block:
+        return block
+    if re.search(r"starterCode: SessionScaffolds\.", block):
+        return block
+    if re.search(r'starterCode: """', block):
+        return re.sub(
+            r'starterCode: """.*?"""',
+            'starterCode: """\n' + safe + '\n"""',
+            block,
+            count=1,
+            flags=re.DOTALL,
+        )
+    if re.search(r'starterCode: "', block):
+        return re.sub(
+            r'starterCode: "(?:[^"\\]|\\.)*"',
+            'starterCode: """\n' + safe + '\n"""',
+            block,
+            count=1,
+        )
+    return block
+
+
+def replace_string_field(block: str, field: str, value: str | None) -> str:
+    if value is None:
+        return re.sub(rf"{field}: [^\n]+\n", f"{field}: nil,\n", block, count=1)
+    escaped = value.replace("\\", "\\\\").replace('"', '\\"')
+    return re.sub(
+        rf'{field}: (?:\"\"\".*?\"\"\"|\"(?:[^"\\]|\\.)*\"|nil)',
+        f'{field}: "{escaped}"',
+        block,
+        count=1,
+        flags=re.DOTALL,
+    )
+
+
+def apply_enrichment(block: str, lesson_id: str) -> str:
+    data = enrichment_for(lesson_id)
+    if not data:
+        return block
+
+    new_block = block
+    if "body" in data:
+        new_block = replace_triple_quoted_field(new_block, "body", data["body"].strip())
+    if "teacherScript" in data:
+        new_block = replace_string_field(new_block, "teacherScript", data["teacherScript"])
+    if "tryItPrompt" in data:
+        new_block = replace_string_field(new_block, "tryItPrompt", data.get("tryItPrompt"))
+    if "practiceSteps" in data:
+        steps_swift = emit_practice_steps_swift(data["practiceSteps"])
+        if "practiceSteps:" in new_block:
+            new_block = re.sub(
+                r"practiceSteps: \[.*?\],\n",
+                steps_swift + "\n",
+                new_block,
+                count=1,
+                flags=re.DOTALL,
+            )
+        elif "tryItPrompt:" in new_block:
+            new_block = re.sub(
+                r"(tryItPrompt: [^\n]+\n)",
+                r"\1" + steps_swift + "\n",
+                new_block,
+                count=1,
+            )
+        else:
+            new_block = re.sub(
+                r'(teacherScript: "(?:[^"\\]|\\.)*"),\n',
+                r"\1,\n" + steps_swift + "\n",
+                new_block,
+                count=1,
+            )
+    if "starterCode" in data:
+        new_block = replace_starter_code_field(new_block, data["starterCode"])
+    if "codeTests" in data:
+        tests_swift = emit_code_tests_swift(lesson_id, data["codeTests"])
+        if "codeTests:" in new_block:
+            new_block = re.sub(
+                r"codeTests: \[.*?\],\n",
+                tests_swift + "\n",
+                new_block,
+                count=1,
+                flags=re.DOTALL,
+            )
+        else:
+            close = new_block.rfind("\n            ),")
+            if close != -1:
+                new_block = new_block[:close] + ",\n" + tests_swift + new_block[close:]
+    return new_block
+
+
 def patch_lesson_block(block: str, lesson_id: str) -> str:
     title = parse_field(block, "title") or lesson_id
     try_it = parse_field(block, "tryItPrompt")
@@ -139,12 +256,12 @@ def main() -> None:
             continue
         start, end = span
         block = text[start:end]
-        new_block = patch_lesson_block(block, lesson_id)
+        new_block = apply_enrichment(patch_lesson_block(block, lesson_id), lesson_id)
         if new_block != block:
             text = text[:start] + new_block + text[end:]
             patched += 1
     SEED.write_text(text)
-    print(f"Patched {patched} lessons in {SEED}")
+    print(f"Enriched {patched} lessons in {SEED}")
 
 
 if __name__ == "__main__":

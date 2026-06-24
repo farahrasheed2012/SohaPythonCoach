@@ -526,19 +526,27 @@ def patch_curriculum_seed(seed_path: Path) -> None:
     import re
 
     text = seed_path.read_text()
-    pattern = re.compile(
-        r"(private static let \w+ = (?:advancedLive|level3Live|level4Live|level4Portfolio)\(\s*"
-        r"week: (\d+),.*?starterCode: )\"\"\".*?\"\"\"",
-        re.DOTALL,
+    # Only patch advancedLive / level*Live blocks that still use triple-quoted starters.
+    block_pattern = re.compile(
+        r"private static let \w+ = (?:advancedLive|level3Live|level4Live|level4Portfolio)\([\s\S]*?\n    \)",
+    )
+    starter_pattern = re.compile(
+        r"(starterCode: )\"\"\"[\s\S]*?\"\"\"",
     )
 
-    def repl(match: re.Match[str]) -> str:
-        week = int(match.group(2))
+    def patch_block(block: str) -> str:
+        week_m = re.search(r"week: (\d+),", block)
+        if not week_m:
+            return block
+        week = int(week_m.group(1))
         if week in CHECKLIST_WEEKS or week not in CAPSTONES:
-            return match.group(0)
-        return match.group(1) + f"SessionScaffolds.week{week}"
+            return block
+        if "SessionScaffolds.week" in block:
+            return block
+        return starter_pattern.sub(rf"\1SessionScaffolds.week{week}", block, count=1)
 
-    seed_path.write_text(pattern.sub(repl, text))
+    text = block_pattern.sub(lambda m: patch_block(m.group(0)), text)
+    seed_path.write_text(text)
 
 
 def main() -> None:
